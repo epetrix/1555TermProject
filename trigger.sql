@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION func_productCount(c IN varchar2, x IN number)
   BEGIN
     SELECT count(*) INTO total
       FROM Product P NATURAL JOIN BelongsTo B CROSS JOIN ourSysDATE O
-      WHERE P.sell_date IS NOT NULL
+      WHERE P.status = 'sold'
         AND B.category = c
         AND MONTHS_BETWEEN(O.c_date, P.sell_date) <= x;
 
@@ -32,11 +32,11 @@ CREATE OR REPLACE FUNCTION func_buyingAmount(u IN varchar2, x IN number)
   total number;
 
   BEGIN
-    SELECT sum(B.amount) INTO total
-      FROM Bidlog B CROSS JOIN ourSysDATE O
-      WHERE B.bid_time IS NOT NULL
-        AND B.bidder = u
-        AND MONTHS_BETWEEN(O.c_date, B.bid_time) <= x;
+    SELECT sum(P.amount) INTO total
+      FROM Product P CROSS JOIN ourSysDATE O
+      WHERE P.status = 'sold'
+        AND P.buyer = u
+        AND MONTHS_BETWEEN(O.c_date, P.sell_date) <= x;
 
     RETURN total;
   END;
