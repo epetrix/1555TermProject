@@ -1,4 +1,4 @@
-DROP TABLE ourSysDate CASCADE CONSTRAINTS;
+DROP TABLE ourSysDATE CASCADE CONSTRAINTS;
 DROP TABLE Customer CASCADE CONSTRAINTS;
 DROP TABLE Administrator CASCADE CONSTRAINTS;
 DROP TABLE Product CASCADE CONSTRAINTS;
@@ -8,10 +8,10 @@ DROP TABLE BelongsTo CASCADE CONSTRAINTS;
 
 commit;
 
-CREATE TABLE ourSysDate
+CREATE TABLE ourSysDATE
 (
     c_date date,
-    CONSTRAINT ourSysDate_PK PRIMARY KEY (c_date)
+    CONSTRAINT ourSysDATE_PK PRIMARY KEY (c_date)
 );
 
 CREATE TABLE Customer
@@ -45,7 +45,7 @@ CREATE TABLE Product
     number_of_days  int,
     status          varchar2(15) NOT NULL,
     buyer           varchar2(10),
-    sell_date       date,  
+    sell_date       date,
     amount          int,
     CONSTRAINT Product_PK PRIMARY KEY (auction_id),
     CONSTRAINT Product_FK_seller FOREIGN KEY (seller) REFERENCES Customer(login),

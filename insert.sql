@@ -1,4 +1,4 @@
-INSERT INTO ourSysDate VALUES(SYSDATE);
+INSERT INTO ourSysDATE VALUES(SYSDATE);
 
 INSERT INTO Customer VALUES('adk67', 'jjj', 'Alex', '300 Road St', 'alex@pitt.edu');
 INSERT INTO Customer VALUES('xyz123', 'password', 'Xavier', '100 Benedum St', 'xavier@pitt.edu');
