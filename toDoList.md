@@ -2,10 +2,10 @@
 
 **PHASE 1**
 
-* schema [x]
-* inserts [x]
-* functions [x]
-* procedures [ ]
-* triggers [ ] 
+- [x] schema
+- [x] inserts
+- [x] functions
+- [ ] procedures
+- [ ] triggers
 
 **PHASE 2**
