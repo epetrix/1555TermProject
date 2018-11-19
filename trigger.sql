@@ -45,3 +45,47 @@ CREATE OR REPLACE FUNCTION func_buyingAmount(u IN varchar2, x IN number)
 -- triggers
 
 commit;
+
+CREATE OR REPLACE TRIGGER trig_bidTimeUpdate
+BEFORE INSERT ON BidLog
+FOR EACH ROW 
+BEGIN
+    :NEW.c_date := c_date + INTERVAL '5' SECOND;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trig_UpdateHighBid
+AFTER INSERT ON BidLog 
+DECLARE bidAmount NUMBER;
+BEGIN
+    SELECT amount INTO bidAmount FROM BidLog;
+    UPDATE Product
+    SET amount = bidAmount; 
+END;
+/
+
+CREATE OR REPLACE TRIGGER trig_closeAuctions
+AFTER UPDATE ON ourSysDATE
+FOR EACH ROW 
+DECLARE currentTime DATE;
+DECLARE bidTime DATE;
+BEGIN
+    SELECT c_date iNTO currentTime FROM ourSysDATE;
+    SELECT sell_date INTO bidTime FROM Product;
+    IF bidTime < currentTime THEN
+        UPDATE Product
+        SET status = 'closed';
+    END IF; 
+END; 
+/
+        
+    
+
+
+    
+    
+    
+
+
+
+
