@@ -48,37 +48,38 @@ CREATE OR REPLACE FUNCTION func_buyingAmount(u IN VARCHAR2, x IN NUMBER)
 -- triggers
 
 CREATE OR REPLACE TRIGGER trig_bidTimeUpdate
-BEFORE INSERT ON BidLog
-FOR EACH ROW
+BEFORE INSERT ON Bidlog
 BEGIN
-    :NEW.c_date := c_date + INTERVAL '5' SECOND;
+    UPDATE ourSysDATE
+    SET c_date = c_date + INTERVAL '5' SECOND;
 END;
 /
 
 CREATE OR REPLACE TRIGGER trig_UpdateHighBid
-AFTER INSERT ON BidLog
-DECLARE bidAmount NUMBER;
+AFTER INSERT ON Bidlog
+FOR EACH ROW
 BEGIN
-    SELECT amount INTO bidAmount FROM BidLog;
     UPDATE Product
-    SET amount = bidAmount;
+    SET amount = :NEW.amount;
 END;
 /
 
 CREATE OR REPLACE TRIGGER trig_closeAuctions
 AFTER UPDATE ON ourSysDATE
 FOR EACH ROW
-DECLARE currentTime DATE;
-DECLARE bidTime DATE;
 BEGIN
-    SELECT c_date INTO currentTime FROM ourSysDATE;
-    SELECT sell_date INTO bidTime FROM Product;
-    IF bidTime < currentTime THEN
+    FOR id IN (
+        SELECT auction_id AS id
+        FROM Product
+        WHERE :NEW.c_date - start_date >= number_of_days)
+    LOOP
         UPDATE Product
-        SET status = 'closed';
-    END IF;
+        SET status = 'closed'
+        WHERE auction_id = id;
+    END LOOP;
 END;
 /
+show errors;
 
 -- procedures
 
