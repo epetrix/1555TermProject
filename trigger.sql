@@ -68,18 +68,11 @@ CREATE OR REPLACE TRIGGER trig_closeAuctions
 AFTER UPDATE ON ourSysDATE
 FOR EACH ROW
 BEGIN
-    FOR id IN (
-        SELECT auction_id AS id
-        FROM Product
-        WHERE :NEW.c_date - start_date >= number_of_days)
-    LOOP
-        UPDATE Product
-        SET status = 'closed'
-        WHERE auction_id = id;
-    END LOOP;
+    UPDATE Product
+    SET status = 'closed'
+    WHERE :NEW.c_date - start_date >= number_of_days;
 END;
 /
-show errors;
 
 -- procedures
 
