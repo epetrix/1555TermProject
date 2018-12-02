@@ -1,15 +1,15 @@
 import java.sql.*;
-import java.util.*; 
+import java.util.Scanner; 
 
 public class Customer {
 	
-	Scanner sc = new Scanner(System.in); 
-	private Statement statement; 
-	private ResultSet resultSet; 
-	private String query; 
-	private int task; 
+	private static final Scanner sc = new Scanner(System.in); 
+	private static Statement statement; 
+	private static ResultSet resultSet; 
+	private static String query;  
 
-	public Customer {
+	private static void displayMenu() {
+		int task; 
 		
 		do {
 			System.out.println("**********MAIN MENU**********");
@@ -43,37 +43,53 @@ public class Customer {
 					break;
 				}
 		
-			} (while task != 7); 
+			} while (task != 7); 
 
 	}
 
-	public void BrowseProd() {
+	private static void BrowseProd() {
 		
 	}
 
-	public void Search() {
+	private static void Search() {
 		
 		System.out.println("Search first keyword: "); 
-		String keyword = sc.Next(); 
+		String keyword = sc.NextLine(); 
+		String[] keywords = keyword.split("\\s+"); 
 
-		query = "SELECT * FROM Products WHERE DESCRIPTION ; 
-
+		query = "SELECT * FROM Products WHERE description LIKE %"+keywords[0]+"% AND desription LIKE %"+keywords[1]+"%"; 
 		resultSet = statement.executeQuery(query);
+
+		while(resultSet.next()) {
+			int id = resultSet.getInt("auction_id");
+			String name = resultSet.getString("name"); 
+			String description = resultSet.getString("description"); 
+			String seller = resultSet.getString("seller"); 
+			Date start_date = resultSet.getDate("start_date");
+			int min = resultSet.getInt("min_price"); 
+			int numDays = resultSet.getInt("number_of_days");
+			String status = resultSet.getString("status");
+			String buyer = resultSet.getString("buyer"); 
+			Date sell_date = resultSet.getDate("sell_date"); 
+			int amount = resultSet.getInt("amount"); 
+			
+			System.out.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n", id, name, description, seller, start_date, min, numDays, status, buyer, sell_date, amount); 
+		}
 	}
 
-	public void Auction() {
+	private static void Auction() {
 
 	}
 
-	public void Bid() {
+	private static void Bid() {
 		
 	}
 
-	public void Sell() {
+	private static void Sell() {
 
 	}
 
-	public void Suggestion() {
+	private static void Suggestion() {
 
 	}
 }
