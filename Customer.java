@@ -16,8 +16,34 @@ public class Customer {
 			System.out.println("\n1. Browse products \n2. search for products \n3. Put products up for auction \n4. Bid on products \n5. Sell products \n6. Suggestions \n7. Quit"); 
 			System.out.println("What do you want to do? "); 
 			task = sc.nextInt(); 
-
-		} (while task != 7); 
+			
+			switch (task) {
+				case 1: 
+					BrowseProd(); 
+					break;
+				case 2:
+					Search(); 
+					break;
+				case 3:
+					Auction(); 
+					break;
+				case 4: 
+					Bid(); 
+					break;
+				case 5:
+					Sell();
+					break;
+				case 6: 
+					Suggestion(); 
+					break;
+				case 7: 
+					break;
+				default: 
+					System.out.println("Not a valid option."); 
+					break;
+				}
+		
+			} (while task != 7); 
 
 	}
 
@@ -27,15 +53,27 @@ public class Customer {
 
 	public void Search() {
 		
-		System.out.println("Search up to two keywords: ); 
-		String keywords = sc.NextLine();
-		String[] keywords = keywords.split("\\s+"); 
-		
-		query = "SELECT * FROM Products WHERE "; 
+		System.out.println("Search first keyword: "); 
+		String keyword = sc.Next(); 
 
-		resultSet = statement.executeQuery(query); 
+		query = "SELECT * FROM Products WHERE DESCRIPTION ; 
 
+		resultSet = statement.executeQuery(query);
+	}
 
-
+	public void Auction() {
 
 	}
+
+	public void Bid() {
+		
+	}
+
+	public void Sell() {
+
+	}
+
+	public void Suggestion() {
+
+	}
+}
