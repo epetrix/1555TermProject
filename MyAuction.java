@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.io.Console;
+import java.util.HashMap;
 
 public class MyAuction
 {
@@ -89,16 +90,23 @@ public class MyAuction
 		return getUserSet("Customer");
 	}
 
-	private static Set<String> getUserSet(String table) {
+	private static HashMap<String> getUserSet(String table) 
+	{
 		try
 		{
 			statement = connection.createStatement();
 			query = "SELECT * FROM " + table;
 			resultSet = statement.executeQuery(query);
-			Set<String> userSet = new HashSet<String>();
+			String username = null;
+			String password = null;
+			HashMap<String, String> userSet = new HashMap<String, String>();
+
 			while(resultSet.next())
 			{
-				userSet.add(resultSet.getString(1));
+				username = resultSet.getString(1);
+				password = resultSet.getString(2);
+				userSet.add(username, password);
+
 			}
 			return userSet;
 		}
