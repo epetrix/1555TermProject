@@ -12,10 +12,10 @@ public class Administrator extends User {
     System.out.println("***************************");
     System.out.println("* Administrator Interface *");
     System.out.println("***************************");
-    System.out.println("a) New customer registration");
-    System.out.println("b) Update system date");
-    System.out.println("c) Product statistics");
-    System.out.println("d) Exit menu");
+    System.out.println("1. New customer registration");
+    System.out.println("2. Update system date");
+    System.out.println("3. Product statistics");
+    System.out.println("4. Exit menu");
     System.out.println();
   }
 
@@ -23,25 +23,25 @@ public class Administrator extends User {
     char answer;
     do {
       displayMenu();
-      answer = Prompter.getChoice('a', 'd');
+      answer = Prompter.getChoice('1', '4');
       switch(answer) {
-        case 'a':
+        case '1':
         registerCustomer();
         break;
 
-        case 'b':
+        case '2':
         updateSysDate();
         break;
 
-        case 'c':
+        case '3':
         getProductStats();
         break;
 
-        case 'd':
+        case '4':
         break;
       }
       System.out.println();
-    } while(answer != 'd');
+    } while(answer != '4');
   }
 
   private void registerCustomer() {
