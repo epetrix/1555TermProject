@@ -1,12 +1,11 @@
 import java.sql.*;
-import java.util.Scanner;
 
 public class Administrator extends User {
   public Administrator(Connection connection) {
     super(connection);
   }
 
-  private static void displayMenu() {
+  private void displayMenu() {
     System.out.println("***************************");
     System.out.println("* Administrator Interface *");
     System.out.println("***************************");
@@ -17,7 +16,7 @@ public class Administrator extends User {
     System.out.println();
   }
 
-  public static void openMenu() {
+  public void openMenu() {
     char answer;
     do {
       displayMenu();
@@ -43,7 +42,7 @@ public class Administrator extends User {
     } while(answer != 'd');
   }
 
-  private static void registerCustomer() {
+  private void registerCustomer() {
     System.out.println("Registering new customer...");
 
     System.out.print("New administrator? (Y/n): ");
@@ -64,10 +63,11 @@ public class Administrator extends User {
     System.out.print("Enter email: ");
     String email = input.nextLine();
 
-    addUser(login, password, name, address, email, admin);
+    boolean success = addUser(login, password, name, address, email, admin);
+    if(!success) System.out.println("User registration failed!");
   }
 
-  private static void addUser(
+  private boolean addUser(
     String login,
     String password,
     String name,
@@ -78,22 +78,27 @@ public class Administrator extends User {
     String table = admin ? "Administrator" : "Customer";
     String query = "INSERT INTO ? VALUES(?,?,?,?,?)";
 
-    PreparedStatement stmt = connection.prepareStatement(query);
-    stmt.setString(1, table);
-    stmt.setString(2, login);
-    stmt.setString(3, password);
-    stmt.setString(4, name);
-    stmt.setString(5, address);
-    stmt.setString(6, user);
+    try {
+      PreparedStatement stmt = connection.prepareStatement(query);
+      stmt.setString(1, table);
+      stmt.setString(2, login);
+      stmt.setString(3, password);
+      stmt.setString(4, name);
+      stmt.setString(5, address);
+      stmt.setString(6, email);
 
-    stmt.executeUpdate();
+      stmt.executeUpdate();
+      return true;
+    } catch(SQLException sqle) {
+      return false;
+    }
   }
 
-  private static void updateSysDate() {
+  private void updateSysDate() {
     System.out.println("Updating system date...");
   }
 
-  private static void getProductStats() {
+  private void getProductStats() {
     System.out.println("Getting product statistics...");
   }
 }

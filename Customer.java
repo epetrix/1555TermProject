@@ -97,7 +97,7 @@ public class Customer extends User {
 
 	}
 
-	private void Suggestion() {
+	private void suggestion() {
 
 	}
 }
