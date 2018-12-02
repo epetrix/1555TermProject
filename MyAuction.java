@@ -97,7 +97,7 @@ public class MyAuction
 
 		try {
 			statement = connection.createStatement();
-			query = "SELECT * FROM " + table;
+			query = "SELECT login, password FROM " + table;
 			resultSet = statement.executeQuery(query);
 
 			while(resultSet.next()) {
