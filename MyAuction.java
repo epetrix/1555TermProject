@@ -1,5 +1,4 @@
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -11,30 +10,25 @@ public class MyAuction
 	private PreparedStatement prepStatement;	//used to create a prepared statement. that will be later reused
 	private ResultSet resultSet;	//used to hold the result of your query
 	private String query;	//this will hold the query we are using
-	private String username;
-	private String password;
 
 	public MyAuction(String user, String pass)
 	{
-		username = "adk67";
-		password = "4039547";
+		String auctionUser = "adk67";
+		String auctionPass = "4039547";
 		try
 		{
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
-			connection = DriverManager.getConnection(url,username,password);
+			connection = DriverManager.getConnection(url, user, pass);
 		}
-		catch(Exception Ex)
+		catch(Exception ex)
 		{
-			System.out.println("Error connection to database. Machine Error: " + Ex.toString());
-			Ex.printStackTrace();
+			System.out.println("Error connection to database. Machine Error: " + ex.toString());
+			ex.printStackTrace();
 		}
 
 		//getting login information, checking validity
-		while(!login(user, pass))
-		{
-			System.out.println("Wrong username or password! Try again");
-		}
+		if(!auctionLogin(auctionUser, auctionPass)) System.exit(1);
 
 		//checking if user is admin or customer, directs them to the correct menu interface
 		User user = getAdminSet().contains(user)
@@ -42,6 +36,7 @@ public class MyAuction
 			: new Customer(connection);
 		user.openMenu();
 	}
+
 	public static void main(String[] args)
 	{
 		Scanner scanner = new Scanner(System.in);
@@ -53,24 +48,16 @@ public class MyAuction
 		MyAuction auction = new MyAuction(user, pass);
 	}
 
-	public boolean login(String user, String pass)
+	public boolean auctionLogin(String user, String pass)
 	{
 		try
 		{
-			Set<String> adminSet = getAdminSet();
-			Set<String> userSet = getUserSet();
-			if(adminSet.contains(user) || userSet.contains(user))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return getAdminSet().contains(user) || getUserSet().contains(user);
 		}
-		catch(Exception Ex)
+		catch(Exception ex)
 		{
-			System.out.println("Error connection to database. Machine Error: " + Ex.toString());
+			System.out.println("Wrong username or password! Try again");
+			System.out.println("Error connection to database. Machine Error: " + ex.toString());
 			return false;
 		}
 	}
@@ -89,9 +76,9 @@ public class MyAuction
 			}
 			return adminSet;
 		}
-		catch(Exception Ex)
+		catch(Exception ex)
 		{
-			System.out.println("Error running the sample queries. Machine Error: " + Ex.toString());
+			System.out.println("Error running the sample queries. Machine Error: " + ex.toString());
 			return null;
 		}
 	}
@@ -110,9 +97,9 @@ public class MyAuction
 			}
 			return userSet;
 		}
-		catch(Exception Ex)
+		catch(Exception ex)
 		{
-			System.out.println("Error running the sample queries. Machine Error: " + Ex.toString());
+			System.out.println("Error running the sample queries. Machine Error: " + ex.toString());
 			return null;
 		}
 	}
