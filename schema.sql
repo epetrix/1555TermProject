@@ -17,10 +17,10 @@ CREATE TABLE ourSysDATE
 CREATE TABLE Customer
 (
     login       varchar2(10),
-    password    varchar2 (10),
+    password    varchar2(10),
     name        varchar2(20),
     address     varchar2(30),
-    email       varchar2 (20),
+    email       varchar2(20),
     CONSTRAINT Customer_PK PRIMARY KEY (login)
 );
 
