@@ -1,5 +1,7 @@
 import java.sql.*;
 import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class Administrator extends User {
   public Administrator(Connection connection) {
@@ -107,6 +109,37 @@ public class Administrator extends User {
 
   private void updateSysDate() {
     System.out.println("Updating system date...");
+
+    String format = "yyyy-MM-dd HH:mm:ss";
+    System.out.print("Enter new system time (" + format + "): ");
+    String dateStr = input.nextLine();
+
+    boolean success = setDate(dateStr, format);
+    System.out.println();
+    if(success) {
+      System.out.println("Succesfully updated system time.");
+    } else {
+      System.out.println("Updating system time failed!");
+    }
+  }
+
+  private boolean setDate(String dateStr, String format) {
+    SimpleDateFormat df = new SimpleDateFormat(format);
+    try {
+      java.util.Date date = df.parse(dateStr);
+      java.sql.Date sysTime = new java.sql.Date(date.getTime());
+
+      String query = "UPDATE ourSysDATE SET c_date = ?";
+      PreparedStatement stmt = connection.prepareStatement(query);
+      stmt.setDate(1, sysTime);
+      stmt.executeUpdate();
+
+      return true;
+    } catch(ParseException ex) {
+      return false;
+    } catch(SQLException ex) {
+      return false;
+    }
   }
 
   private void getProductStats() {
