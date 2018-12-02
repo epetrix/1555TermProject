@@ -1,8 +1,9 @@
 import java.sql.*;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 import java.io.Console;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.HashMap;
 
 public class MyAuction
@@ -17,16 +18,22 @@ public class MyAuction
 	public static void main(String[] args)
 	{
 		scanner = new Scanner(System.in);
-		System.out.println("Hello welcome to our Electronic Auctioning System! Please log in.");
 		serverLogin();
-		auctionLogin();
+		String answer;
+		do {
+			auctionLogin();
+			System.out.println("Log in again? (Y/n): ");
+			answer = scanner.nextLine().toLowerCase();
+		} while(answer.equals("y"));
+		System.out.println("Logging out...");
 	}
 
 	private static void serverLogin() {
+		System.out.println("Please enter your user credentials for sqlplus.");
 		boolean success = false;
 		do {
 			System.out.print("username: ");
-			String user = scanner.nextLine();
+			String username = scanner.nextLine();
 
 			System.out.print("password: ");
 			String password = getPassword(scanner);
@@ -44,9 +51,10 @@ public class MyAuction
 				password = null;
 			}
 		} while(!success);
+		System.out.println();
 	}
 
-	private static String getPassword(Scanner input) {
+	public static String getPassword(Scanner input) {
 		Console console = System.console();
 
 		String passwordStr = null;
@@ -62,58 +70,69 @@ public class MyAuction
 		return passwordStr;
 	}
 
-	public static void auctionLogin()
-	{
-		String username = "admin";
-		String password = "pass";
+	public static void auctionLogin() {
+		System.out.print("Hello welcome to our Electronic Auctioning System! ");
+		System.out.println("Please log in.");
 
-		//getting login information, checking validity
-		if(!auctionLogin(username, password)) {
-			System.out.println("Wrong username or password! Try again");
-			System.exit(1);
+		User user;
+		while(true) {
+			System.out.print("username: ");
+			String username = scanner.nextLine();
+
+			System.out.print("password: ");
+			String password = getPassword(scanner);
+
+			//checking if user is admin or customer
+			//getting login information, checking validity
+			user = getUser(username, password);
+			if(user != null) break;
+
+			System.out.println("Wrong username or password! Try again.");
 		}
 
-		//checking if user is admin or customer, directs them to the correct menu interface
-		User user = getAdminSet().contains(auctionUser)
-			? new Administrator(connection)
-			: new Customer(connection);
 		user.openMenu();
 	}
 
-	public static Set<String> getAdminSet()
-	{
-		return getUserSet("Administrator");
+	private static User getUser(String username, String password) {
+		if(password.equals(getAdminMap().get(username))) {
+			return new Administrator(connection);
+		} else if(password.equals(getCustomerMap().get(username))) {
+			return new Customer(connection);
+		} else {
+			return null;
+		}
 	}
 
-	public static Set<String> getCustomerSet()
+	public static Map<String,String> getAdminMap()
 	{
-		return getUserSet("Customer");
+		return getUserMap("Administrator");
 	}
 
-	private static HashMap<String> getUserSet(String table) 
+	public static Map<String,String> getCustomerMap()
 	{
-		try
-		{
+		return getUserMap("Customer");
+	}
+
+	private static Map<String,String> getUserMap(String table)
+	{
+		Map<String,String> userSet = new HashMap<String,String>();
+
+		try {
 			statement = connection.createStatement();
 			query = "SELECT * FROM " + table;
 			resultSet = statement.executeQuery(query);
-			String username = null;
-			String password = null;
-			HashMap<String, String> userSet = new HashMap<String, String>();
 
-			while(resultSet.next())
-			{
-				username = resultSet.getString(1);
-				password = resultSet.getString(2);
-				userSet.add(username, password);
-
+			while(resultSet.next()) {
+				String username = resultSet.getString(1);
+				String password = resultSet.getString(2);
+				userSet.put(username, password);
 			}
-			return userSet;
+		} catch(SQLException ex) {
+			System.err.print("Error fetching users. Machine Error: ");
+			System.err.println(ex);
+			System.exit(1);
 		}
-		catch(Exception ex)
-		{
-			System.out.println("Error running the sample queries. Machine Error: " + ex.toString());
-			return null;
-		}
+
+		return userSet;
 	}
 }

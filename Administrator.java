@@ -52,7 +52,7 @@ public class Administrator extends User {
     String login = input.nextLine();
 
     System.out.print("Enter password: ");
-    String password = input.nextLine();
+    String password = MyAuction.getPassword(input);
 
     System.out.print("Enter name: ");
     String name = input.nextLine();
@@ -64,6 +64,7 @@ public class Administrator extends User {
     String email = input.nextLine();
 
     boolean success = addUser(login, password, name, address, email, admin);
+    password = null;
     if(!success) System.out.println("User registration failed!");
   }
 
@@ -76,21 +77,23 @@ public class Administrator extends User {
     boolean admin
   ) {
     String table = admin ? "Administrator" : "Customer";
-    String query = "INSERT INTO ? VALUES(?,?,?,?,?)";
+    String query = "INSERT INTO " + table + " VALUES(?,?,?,?,?)";
 
     try {
       PreparedStatement stmt = connection.prepareStatement(query);
-      stmt.setString(1, table);
-      stmt.setString(2, login);
-      stmt.setString(3, password);
-      stmt.setString(4, name);
-      stmt.setString(5, address);
-      stmt.setString(6, email);
+      stmt.setString(1, login);
+      stmt.setString(2, password);
+      stmt.setString(3, name);
+      stmt.setString(4, address);
+      stmt.setString(5, email);
 
       stmt.executeUpdate();
+      System.out.println("Registered user successfully.");
       return true;
-    } catch(SQLException sqle) {
+    } catch(SQLException ex) {
       return false;
+    } finally {
+      password = null;
     }
   }
 
