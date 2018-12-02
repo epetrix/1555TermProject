@@ -6,13 +6,11 @@ public class Prompter {
   private static final Console console = System.console();
 
 	public static String getSecret() {
-		String secret = null;
 		if(console == null) return input.nextLine();
 
 		char[] password = console.readPassword();
-		secret = new String(password);
+		String secret = new String(password);
 		java.util.Arrays.fill(password, '\0');
-		password = null;
 		return secret;
 	}
 

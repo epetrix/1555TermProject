@@ -47,8 +47,6 @@ public class MyAuction
 				System.out.print("Wrong username or password. Try again!");
 				System.out.println(ex);
 				System.exit(1);
-			} finally {
-				password = null;
 			}
 		} while(!success);
 		System.out.println();
