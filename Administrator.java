@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class Administrator {
   private static final Scanner input = new Scanner(System.in);
 
-  private static displayMenu() {
+  private static void displayMenu() {
     System.out.println("***************************");
     System.out.println("* Administrator Interface *");
     System.out.println("***************************");
@@ -20,7 +20,7 @@ public class Administrator {
     System.out.print("Choice: ");
     while(true) {
       String line = input.nextLine();
-      if(line.length == 1) {
+      if(line.length() == 1) {
         answer = line.charAt(0);
         if(answer >= start && answer <= end) break;
       }
@@ -31,7 +31,7 @@ public class Administrator {
     return answer;
   }
 
-  public static void menu() {
+  public static void openMenu() {
     char answer;
     do {
       displayMenu();
@@ -53,7 +53,7 @@ public class Administrator {
         System.out.println("Exiting admin interface");
         break;
       }
-      Sytem.out.println();
+      System.out.println();
     } while(answer != 'd');
   }
 

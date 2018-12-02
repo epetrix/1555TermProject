@@ -7,7 +7,7 @@
        ssn      number(10),
        bday     date
     );
-    
+
     For demostratration purpose, insert two records into this table:
     ( 'Mike', 123456789, '09/Nov/03' )
     ( 'Amy', 987654321, '10/Nov/03' )
@@ -15,8 +15,8 @@
     Written by: Jonathan Beaver, modified by Thao Pham
     Purpose: Demo JDBC for CS1555 Class
 
-    IMPORTANT (otherwise, your code may not compile)	
-    Same as using sqlplus, you need to set oracle environment variables by 
+    IMPORTANT (otherwise, your code may not compile)
+    Same as using sqlplus, you need to set oracle environment variables by
     sourcing bash.env or tcsh.env
 */
 
@@ -42,14 +42,14 @@ public class JavaDemo
     password = "yourPeopleSoftNum"; //This is your password in oracle
     try{
       //Register the oracle driver.  This needs the oracle files provided
-      //in the oracle.zip file, unzipped into the local directory and 
+      //in the oracle.zip file, unzipped into the local directory and
       //the class path set to include the local directory
       DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
       //This is the location of the database.  This is the database in oracle
       //provided to the class
-      String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass"; 
-      
-      connection = DriverManager.getConnection(url, username, password); 
+      String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
+
+      connection = DriverManager.getConnection(url, username, password);
       //create a connection to DB on class3.cs.pitt.edu
     }
     catch(Exception Ex)  //What to do with any exceptions
@@ -90,33 +90,33 @@ public class JavaDemo
 
 
       /*Now, we show an insert, using preparedStatement. Of course for this you can also write the query directly as the above case with select, and vice versa. */
-      
+
       String name = "tester 2";
       long ssn = 111111113;
 
-      
+
       java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
-     
+
       java.sql.Date bday = new java.sql.Date (df.parse("1990-01-20").getTime());
 
       query = "insert into Test values (?,?,?)";
-     
+
       PreparedStatement updateStatement = connection.prepareStatement(query);
       updateStatement.setString(1, name);
       updateStatement.setLong(2,ssn);
       updateStatement.setDate(3,bday);
-    
+
       updateStatement.executeUpdate();
-    	
-      
-      /* We can also so the insert statement directly as follows:
+
+
+      /* We can also do the insert statement directly as follows:
 
        query = "INSERT INTO Test VALUES ('Tester', 111111112, '1/Nov/03')";
-      int result = statement.executeUpdate(query); //executing update returns 
+      int result = statement.executeUpdate(query); //executing update returns
       //either the row count for INSERT, UPDATE or DELETE or 0 for SQL
       //statements that return nothing
 
-      */	
+      */
 
       //I will show the insert worked by selecting the content of the table again
       //statement = connection.createStatement();
@@ -134,7 +134,7 @@ public class JavaDemo
       }
 
       connection.close();
-    
+
     }
     catch(Exception Ex)
     {
@@ -147,6 +147,7 @@ public class JavaDemo
 
   public static void main(String args[])
   {
-    JavaDemo demo = new JavaDemo();
+    // JavaDemo demo = new JavaDemo();
+    Administrator.openMenu();
   }
 }
