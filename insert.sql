@@ -4,7 +4,7 @@ INSERT INTO Customer VALUES('adk67', 'jjj', 'Alex', '300 Road St', 'alex@pitt.ed
 INSERT INTO Customer VALUES('xyz123', 'password', 'Xavier', '100 Benedum St', 'xavier@pitt.edu');
 INSERT INTO Customer VALUES('abc456', 'dogs', 'Alice', '200 Cathy Blvd', 'alice@pitt.edu');
 
-INSERT INTO Administrator VALUES('admin', 'pass', 'Bob', '123 Sennott St', 'bob@pitt.edu');
+INSERT INTO Administrator VALUES('admin', 'root', 'Bob', '123 Sennott St', 'bob@pitt.edu');
 
 INSERT INTO Product VALUES(1, 'toaster', 'toasts bread', 'adk67', SYSDATE, 20, 10, 'not sold', null, null, 2);
 INSERT INTO Product VALUES(2, 'Macbook Pro 2018', 'brand new Apple computer', 'abc456', SYSDATE, 1500, 30, 'not sold', null, null, 1);
