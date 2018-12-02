@@ -13,7 +13,7 @@ public class Customer extends User {
 		System.out.println("**********MAIN MENU**********");
 		System.out.println();
 		System.out.println("1. Browse products");
-		System.out.println("2. search for products");
+		System.out.println("2. Search for products");
 		System.out.println("3. Put products up for auction");
 		System.out.println("4. Bid on products");
 		System.out.println("5. Sell products");
@@ -25,6 +25,7 @@ public class Customer extends User {
 	public void openMenu() {
 		char task;
 		do {
+			displayMenu();
 			task = getChoice('1', '7');
 			switch (task) {
 				case '1':
@@ -81,7 +82,7 @@ public class Customer extends User {
 			}
 		} catch(Exception e) {
 			System.err.println("Uh dang, exception");
-			System.err.println(e.getMessage());
+			System.err.println(e);
 		}
 	}
 
