@@ -1,7 +1,10 @@
+import java.sql.*;
 import java.util.Scanner;
 
-public class Administrator {
-  private static final Scanner input = new Scanner(System.in);
+public class Administrator extends User {
+  public Administrator(Connection connection) {
+    super(connection);
+  }
 
   private static void displayMenu() {
     System.out.println("***************************");
@@ -12,23 +15,6 @@ public class Administrator {
     System.out.println("c) Product statistics");
     System.out.println("d) Exit menu");
     System.out.println();
-  }
-
-  private static char getChoice(char start, char end) {
-    char answer;
-
-    System.out.print("Choice: ");
-    while(true) {
-      String line = input.nextLine();
-      if(line.length() == 1) {
-        answer = line.charAt(0);
-        if(answer >= start && answer <= end) break;
-      }
-
-      System.out.println("Answer must fall between '" + start + "' and '" + end + "'");
-      System.out.print("Choice: ");
-    }
-    return answer;
   }
 
   public static void openMenu() {
@@ -58,7 +44,49 @@ public class Administrator {
   }
 
   private static void registerCustomer() {
-    System.out.println("Registering customer...");
+    System.out.println("Registering new customer...");
+
+    System.out.print("New administrator? (Y/n): ");
+    boolean admin = input.nextLine().toLowerCase().equals("y");
+
+    System.out.print("Enter login: ");
+    String login = input.nextLine();
+
+    System.out.print("Enter password: ");
+    String password = input.nextLine();
+
+    System.out.print("Enter name: ");
+    String name = input.nextLine();
+
+    System.out.print("Enter address: ");
+    String address = input.nextLine();
+
+    System.out.print("Enter email: ");
+    String email = input.nextLine();
+
+    addUser(login, password, name, address, email, admin);
+  }
+
+  private static void addUser(
+    String login,
+    String password,
+    String name,
+    String address,
+    String email,
+    boolean admin
+  ) {
+    String table = admin ? "Administrator" : "Customer";
+    String query = "INSERT INTO ? VALUES(?,?,?,?,?)";
+
+    PreparedStatement stmt = connection.prepareStatement(query);
+    stmt.setString(1, table);
+    stmt.setString(2, login);
+    stmt.setString(3, password);
+    stmt.setString(4, name);
+    stmt.setString(5, address);
+    stmt.setString(6, user);
+
+    stmt.executeUpdate();
   }
 
   private static void updateSysDate() {
