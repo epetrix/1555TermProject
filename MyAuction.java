@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 public class MyAuction 
@@ -13,7 +14,7 @@ public class MyAuction
 	private String username;
 	private String password;
 	
-	public MyAuction()
+	public MyAuction(String user, String pass)
 	{
 		username = "adk67";
 		password = "4039547";
@@ -29,23 +30,56 @@ public class MyAuction
 			Ex.printStackTrace();
 		}
 		
+		//getting login information, checking validity
+		while(!login(user, pass))
+		{
+			System.out.println("Wrong username or password! Try again");
+		}
+		
+		//checking if user is admin or customer, directs them to the correct menu interface
+		Set<String> adminSet = getAdminSet();
+		Set<String> userSet = getUserSet();
+		if(adminSet.contains(user))
+		{
+			Administrator admin = new Administrator();
+		}
+		else if(userSet.contains(user))
+		{
+			Customer customer = new Customer();
+		}
+		
+	}
+	public static void main(String[] args)
+	{
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Hello welcome to our Electronic Auctioning System! Please log in.");
+		System.out.print("username: ");
+		String user = scanner.next();
+		System.out.println("\npassword: ");
+		String pass = scanner.next();
+		MyAuction auction = new MyAuction(user, pass);
+	}
+	
+	public boolean login(String user, String pass)
+	{
 		try
 		{
-			statement = connection.createStatement();
-			query = "SELECT * FROM Administrator";
-			resultSet = statement.executeQuery(query);
-			while(resultSet.next())
+			Set<String> adminSet = getAdminSet();
+			Set<String> userSet = getUserSet();
+			if(adminSet.contains(user) || userSet.contains(user))
 			{
-				ArrayList<String> adminList = new ArrayList<String>();
-				adminList.add(resultSet.getString(1));
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 		catch(Exception Ex)
 		{
-			System.out.println("Error running the sample queries. Machine Error: " + Ex.toString());
-
+			System.out.println("Error connection to database. Machine Error: " + Ex.toString());
+			return false;
 		}
-		
 	}
 	
 	public Set<String> getAdminSet()
