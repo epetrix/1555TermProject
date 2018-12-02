@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Map;
 
 public class Administrator extends User {
   public Administrator(Connection connection) {
@@ -63,8 +64,8 @@ public class Administrator extends User {
     String email = input.nextLine();
 
     boolean success = addUser(login, password, name, address, email, admin);
-    password = null;
     System.out.println();
+
     if(success)  {
       System.out.println("Registered user successfully.");
     } else {
@@ -82,6 +83,12 @@ public class Administrator extends User {
   ) {
     String table = admin ? "Administrator" : "Customer";
     String query = "INSERT INTO " + table + " VALUES(?,?,?,?,?)";
+    Map<String,String> adminMap = MyAuction.getAdminMap();
+    Map<String,String> customerMap = MyAuction.getCustomerMap();
+
+    if(adminMap.containsKey(login) || customerMap.containsKey(login)) {
+      return false;
+    }
 
     try {
       PreparedStatement stmt = connection.prepareStatement(query);
@@ -95,8 +102,6 @@ public class Administrator extends User {
       return true;
     } catch(SQLException ex) {
       return false;
-    } finally {
-      password = null;
     }
   }
 
