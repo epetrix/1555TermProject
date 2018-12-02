@@ -53,53 +53,48 @@ public class Customer extends User {
 		} while (task != '7');
 	}
 
-	private void browseProd() {
-
-	}
+	private void browseProd() {}
 
 	private void search() {
-		try {
-			System.out.println("Search first keyword: ");
-			String keyword = input.nextLine();
-			String[] keywords = keyword.split("\\s+");
+		System.out.println("Search up to two keywords: ");
+		String[] keywords = input.nextLine().toLowerCase().split("\\s+", 3);
+		System.out.println();
 
-			query = "SELECT * FROM Products WHERE description LIKE %"+keywords[0]+"% AND desription LIKE %"+keywords[1]+"%";
+		query = "SELECT auction_id, name, description "
+			+ "FROM Product "
+			+ "WHERE LOWER(description) LIKE '%" + keywords[0] + "%'";
+		if(keywords.length >= 2) {
+			 query += " AND LOWER(description) LIKE '%" + keywords[1] + "%'";
+		}
+
+		try {
+			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 
-			while(resultSet.next()) {
-				int id = resultSet.getInt("auction_id");
-				String name = resultSet.getString("name");
-				String description = resultSet.getString("description");
-				String seller = resultSet.getString("seller");
-				Date start_date = resultSet.getDate("start_date");
-				int min = resultSet.getInt("min_price");
-				int numDays = resultSet.getInt("number_of_days");
-				String status = resultSet.getString("status");
-				String buyer = resultSet.getString("buyer");
-				Date sell_date = resultSet.getDate("sell_date");
-				int amount = resultSet.getInt("amount");
-
-				System.out.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n", id, name, description, seller, start_date, min, numDays, status, buyer, sell_date, amount);
+			System.out.println("Returned result(s):");
+			if(!resultSet.next()) {
+				System.out.println("No items matched the given keywords.");
+				return;
 			}
-		} catch(Exception e) {
-			System.err.println("Uh dang, exception");
-			System.err.println(e);
+
+			int i = 1;
+			do {
+				System.out.print(i + ") ");
+				System.out.print(resultSet.getInt(1) + ", ");
+				System.out.print("\"" + resultSet.getString(2) + "\", ");
+				System.out.println("\"" + resultSet.getString(3) + "\"");
+				i++;
+			} while(resultSet.next());
+		} catch(SQLException ex) {
+			System.err.println("Error retrieving entries from database: " + ex);
 		}
 	}
 
-	private void auction() {
+	private void auction() {}
 
-	}
+	private void bid() {}
 
-	private void bid() {
+	private void sell() {}
 
-	}
-
-	private void sell() {
-
-	}
-
-	private void suggestion() {
-
-	}
+	private void suggestion() {}
 }
