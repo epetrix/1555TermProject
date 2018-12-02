@@ -1,12 +1,14 @@
 # Simple Makefile for the project
 
-default: all
-all: MyAuction
+PROJ = MyAuction
 
-MyAuction: *.java
-	javac MyAuction.java
+default: all
+all: $(PROJ)
+
+$(PROJ): *.java
+	javac $(PROJ).java
 
 clean:
 	$(RM) *.class
 
-.PHONY: default all MyAuction clean
+.PHONY: default all $(PROJ) clean
