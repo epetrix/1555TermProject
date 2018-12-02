@@ -1,100 +1,103 @@
 import java.sql.*;
-import java.util.Scanner; 
 
-public class Customer {
-	
-	private static final Scanner sc = new Scanner(System.in); 
-	private static Statement statement; 
-	private static ResultSet resultSet; 
-	private static String query;  
+public class Customer extends User {
+	private Statement statement;
+	private ResultSet resultSet;
+	private String query;
 
-	private static void displayMenu() {
-		int task; 
-		
+	public Customer(Connection connection) {
+		super(connection);
+	}
+
+	private void displayMenu() {
+		System.out.println("**********MAIN MENU**********");
+		System.out.println();
+		System.out.println("1. Browse products");
+		System.out.println("2. search for products");
+		System.out.println("3. Put products up for auction");
+		System.out.println("4. Bid on products");
+		System.out.println("5. Sell products");
+		System.out.println("6. Suggestions");
+		System.out.println("7. Quit");
+		System.out.println("What do you want to do? ");
+	}
+
+	public void openMenu() {
+		char task;
 		do {
-			System.out.println("**********MAIN MENU**********");
-			System.out.println("\n1. Browse products \n2. search for products \n3. Put products up for auction \n4. Bid on products \n5. Sell products \n6. Suggestions \n7. Quit"); 
-			System.out.println("What do you want to do? "); 
-			task = sc.nextInt(); 
-			
+			task = getChoice('1', '7');
 			switch (task) {
-				case 1: 
-					BrowseProd(); 
+				case '1':
+					browseProd();
 					break;
-				case 2:
-					Search(); 
+				case '2':
+					search();
 					break;
-				case 3:
-					Auction(); 
+				case '3':
+					auction();
 					break;
-				case 4: 
-					Bid(); 
+				case '4':
+					bid();
 					break;
-				case 5:
-					Sell();
+				case '5':
+					sell();
 					break;
-				case 6: 
-					Suggestion(); 
+				case '6':
+					suggestion();
 					break;
-				case 7: 
+				case '7':
 					break;
-				default: 
-					System.out.println("Not a valid option."); 
-					break;
-				}
-		
-			} while (task != 7); 
+			}
+		} while (task != '7');
+	}
+
+	private void browseProd() {
 
 	}
 
-	private static void BrowseProd() {
-		
-	}
+	private void search() {
+		try {
+			System.out.println("Search first keyword: ");
+			String keyword = input.nextLine();
+			String[] keywords = keyword.split("\\s+");
 
-	private static void Search() {
-		try {	
-		System.out.println("Search first keyword: "); 
-		String keyword = sc.nextLine(); 
-		String[] keywords = keyword.split("\\s+"); 
+			query = "SELECT * FROM Products WHERE description LIKE %"+keywords[0]+"% AND desription LIKE %"+keywords[1]+"%";
+			resultSet = statement.executeQuery(query);
 
-		query = "SELECT * FROM Products WHERE description LIKE %"+keywords[0]+"% AND desription LIKE %"+keywords[1]+"%"; 
-		resultSet = statement.executeQuery(query);
+			while(resultSet.next()) {
+				int id = resultSet.getInt("auction_id");
+				String name = resultSet.getString("name");
+				String description = resultSet.getString("description");
+				String seller = resultSet.getString("seller");
+				Date start_date = resultSet.getDate("start_date");
+				int min = resultSet.getInt("min_price");
+				int numDays = resultSet.getInt("number_of_days");
+				String status = resultSet.getString("status");
+				String buyer = resultSet.getString("buyer");
+				Date sell_date = resultSet.getDate("sell_date");
+				int amount = resultSet.getInt("amount");
 
-		while(resultSet.next()) {
-			int id = resultSet.getInt("auction_id");
-			String name = resultSet.getString("name"); 
-			String description = resultSet.getString("description"); 
-			String seller = resultSet.getString("seller"); 
-			Date start_date = resultSet.getDate("start_date");
-			int min = resultSet.getInt("min_price"); 
-			int numDays = resultSet.getInt("number_of_days");
-			String status = resultSet.getString("status");
-			String buyer = resultSet.getString("buyer"); 
-			Date sell_date = resultSet.getDate("sell_date"); 
-			int amount = resultSet.getInt("amount"); 
-			
-			System.out.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n", id, name, description, seller, start_date, min, numDays, status, buyer, sell_date, amount); 
-		}
-		
-		}catch(Exception e) {
-			System.err.println("Uh dang, exception"); 
-			System.err.println(e.getMessage()); 
+				System.out.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n", id, name, description, seller, start_date, min, numDays, status, buyer, sell_date, amount);
+			}
+		} catch(Exception e) {
+			System.err.println("Uh dang, exception");
+			System.err.println(e.getMessage());
 		}
 	}
 
-	private static void Auction() {
+	private void auction() {
 
 	}
 
-	private static void Bid() {
-		
-	}
-
-	private static void Sell() {
+	private void bid() {
 
 	}
 
-	private static void Suggestion() {
+	private void sell() {
+
+	}
+
+	private void Suggestion() {
 
 	}
 }

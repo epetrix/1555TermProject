@@ -4,16 +4,16 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-public class MyAuction 
+public class MyAuction
 {
 	private static Connection connection;	//used to hold the jdbc connection to the DB
 	private Statement statement;	//used to create an instance of the connection
 	private PreparedStatement prepStatement;	//used to create a prepared statement. that will be later reused
-	private ResultSet resultSet;	//used to hold the result of your query 
+	private ResultSet resultSet;	//used to hold the result of your query
 	private String query;	//this will hold the query we are using
 	private String username;
 	private String password;
-	
+
 	public MyAuction(String user, String pass)
 	{
 		username = "adk67";
@@ -29,25 +29,18 @@ public class MyAuction
 			System.out.println("Error connection to database. Machine Error: " + Ex.toString());
 			Ex.printStackTrace();
 		}
-		
+
 		//getting login information, checking validity
 		while(!login(user, pass))
 		{
 			System.out.println("Wrong username or password! Try again");
 		}
-		
+
 		//checking if user is admin or customer, directs them to the correct menu interface
-		Set<String> adminSet = getAdminSet();
-		Set<String> userSet = getUserSet();
-		if(adminSet.contains(user))
-		{
-			Administrator admin = new Administrator();
-		}
-		else if(userSet.contains(user))
-		{
-			Customer customer = new Customer();
-		}
-		
+		User user = getAdminSet().contains(user)
+			? new Administrator(connection)
+			: new Customer(connection);
+		user.openMenu();
 	}
 	public static void main(String[] args)
 	{
@@ -59,7 +52,7 @@ public class MyAuction
 		String pass = scanner.next();
 		MyAuction auction = new MyAuction(user, pass);
 	}
-	
+
 	public boolean login(String user, String pass)
 	{
 		try
@@ -81,7 +74,7 @@ public class MyAuction
 			return false;
 		}
 	}
-	
+
 	public Set<String> getAdminSet()
 	{
 		try
@@ -102,7 +95,7 @@ public class MyAuction
 			return null;
 		}
 	}
-	
+
 	public Set<String> getUserSet()
 	{
 		try
