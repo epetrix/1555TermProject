@@ -52,9 +52,9 @@ public class Customer {
 	}
 
 	private static void Search() {
-		
+		try {	
 		System.out.println("Search first keyword: "); 
-		String keyword = sc.NextLine(); 
+		String keyword = sc.nextLine(); 
 		String[] keywords = keyword.split("\\s+"); 
 
 		query = "SELECT * FROM Products WHERE description LIKE %"+keywords[0]+"% AND desription LIKE %"+keywords[1]+"%"; 
@@ -74,6 +74,11 @@ public class Customer {
 			int amount = resultSet.getInt("amount"); 
 			
 			System.out.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n", id, name, description, seller, start_date, min, numDays, status, buyer, sell_date, amount); 
+		}
+		
+		}catch(Exception e) {
+			System.err.println("Uh dang, exception"); 
+			System.err.println(e.getMessage()); 
 		}
 	}
 
