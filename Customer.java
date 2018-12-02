@@ -26,7 +26,7 @@ public class Customer extends User {
 		char task;
 		do {
 			displayMenu();
-			task = getChoice('1', '7');
+			task = Prompter.getChoice('1', '7');
 			switch (task) {
 				case '1':
 					browseProd();
@@ -49,6 +49,7 @@ public class Customer extends User {
 				case '7':
 					break;
 			}
+			System.out.println();
 		} while (task != '7');
 	}
 

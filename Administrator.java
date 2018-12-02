@@ -20,7 +20,7 @@ public class Administrator extends User {
     char answer;
     do {
       displayMenu();
-      answer = getChoice('a', 'd');
+      answer = Prompter.getChoice('a', 'd');
       switch(answer) {
         case 'a':
         registerCustomer();
@@ -35,7 +35,6 @@ public class Administrator extends User {
         break;
 
         case 'd':
-        System.out.println("Exiting admin interface");
         break;
       }
       System.out.println();
@@ -46,13 +45,13 @@ public class Administrator extends User {
     System.out.println("Registering new customer...");
 
     System.out.print("New administrator? (Y/n): ");
-    boolean admin = input.nextLine().toLowerCase().equals("y");
+    boolean admin = Prompter.getBoolean();
 
     System.out.print("Enter login: ");
     String login = input.nextLine();
 
     System.out.print("Enter password: ");
-    String password = MyAuction.getPassword(input);
+    String password = Prompter.getSecret();
 
     System.out.print("Enter name: ");
     String name = input.nextLine();
@@ -65,7 +64,12 @@ public class Administrator extends User {
 
     boolean success = addUser(login, password, name, address, email, admin);
     password = null;
-    if(!success) System.out.println("User registration failed!");
+    System.out.println();
+    if(success)  {
+      System.out.println("Registered user successfully.");
+    } else {
+      System.out.println("User registration failed!");
+    }
   }
 
   private boolean addUser(
@@ -88,7 +92,6 @@ public class Administrator extends User {
       stmt.setString(5, email);
 
       stmt.executeUpdate();
-      System.out.println("Registered user successfully.");
       return true;
     } catch(SQLException ex) {
       return false;

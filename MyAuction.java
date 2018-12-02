@@ -19,13 +19,13 @@ public class MyAuction
 	{
 		scanner = new Scanner(System.in);
 		serverLogin();
-		String answer;
+		boolean done;
 		do {
 			auctionLogin();
-			System.out.println("Log in again? (Y/n): ");
-			answer = scanner.nextLine().toLowerCase();
-		} while(answer.equals("y"));
-		System.out.println("Logging out...");
+			System.out.print("Log in again? (Y/n): ");
+			done = !Prompter.getBoolean();
+		} while(!done);
+		System.out.println("Goodbye!");
 	}
 
 	private static void serverLogin() {
@@ -36,7 +36,7 @@ public class MyAuction
 			String username = scanner.nextLine();
 
 			System.out.print("password: ");
-			String password = getPassword(scanner);
+			String password = Prompter.getSecret();
 
 			try {
 				DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
@@ -54,53 +54,33 @@ public class MyAuction
 		System.out.println();
 	}
 
-	public static String getPassword(Scanner input) {
-		Console console = System.console();
-
-		String passwordStr = null;
-		if(console != null) {
-			char[] password = console.readPassword();
-			passwordStr = new String(password);
-			java.util.Arrays.fill(password, '\0');
-			password = null;
-		} else {
-			passwordStr = input.nextLine();
-		}
-
-		return passwordStr;
-	}
-
 	public static void auctionLogin() {
 		System.out.print("Hello welcome to our Electronic Auctioning System! ");
 		System.out.println("Please log in.");
 
-		User user;
-		while(true) {
+		Map<String,String> adminMap = getAdminMap();
+		Map<String,String> customerMap = getCustomerMap();
+		User user = null;
+		while(user == null) {
 			System.out.print("username: ");
 			String username = scanner.nextLine();
 
 			System.out.print("password: ");
-			String password = getPassword(scanner);
+			String password = Prompter.getSecret();
 
 			//checking if user is admin or customer
 			//getting login information, checking validity
-			user = getUser(username, password);
-			if(user != null) break;
-
-			System.out.println("Wrong username or password! Try again.");
+			if(password.equals(adminMap.get(username))) {
+				user = new Administrator(connection);
+			} else if(password.equals(customerMap.get(username))) {
+				user = new Customer(connection);
+			} else {
+				System.out.println("Wrong username or password! Try again.");
+			}
 		}
 
 		user.openMenu();
-	}
-
-	private static User getUser(String username, String password) {
-		if(password.equals(getAdminMap().get(username))) {
-			return new Administrator(connection);
-		} else if(password.equals(getCustomerMap().get(username))) {
-			return new Customer(connection);
-		} else {
-			return null;
-		}
+		System.out.println("Logging out...");
 	}
 
 	public static Map<String,String> getAdminMap()
