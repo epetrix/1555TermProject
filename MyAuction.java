@@ -69,9 +69,9 @@ public class MyAuction
 			//checking if user is admin or customer
 			//getting login information, checking validity
 			if(password.equals(adminMap.get(username))) {
-				user = new Administrator(connection);
+				user = new Administrator(connection, username);
 			} else if(password.equals(customerMap.get(username))) {
-				user = new Customer(connection);
+				user = new Customer(connection, username);
 			} else {
 				System.out.println("Wrong username or password! Try again.");
 			}

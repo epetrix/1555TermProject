@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 public class Administrator extends User {
-  public Administrator(Connection connection) {
-    super(connection);
+  public Administrator(Connection connection, String login) {
+    super(connection, login);
   }
 
   private void displayMenu() {

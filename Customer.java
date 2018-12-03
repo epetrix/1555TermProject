@@ -1,13 +1,15 @@
 import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Customer extends User {
-	
+
 	private Statement statement;
 	private ResultSet resultSet;
 	private String query;
 
-	public Customer(Connection connection) {
-		super(connection);
+	public Customer(Connection connection, String login) {
+		super(connection, login);
 	}
 
 	private void displayMenu() {
@@ -28,7 +30,7 @@ public class Customer extends User {
 		do {
 			displayMenu();
 			task = Prompter.getChoice('1', '7');
-			
+
 			switch (task) {
 				case '1':
 					browseProd();
@@ -43,15 +45,16 @@ public class Customer extends User {
 					bid();
 					break;
 				case '5':
-					sell();
+					openSellMenu();
+					System.out.println("Exiting sell menu...");
 					break;
 				case '6':
 					suggestion();
 					break;
 				case '7':
 					break;
-				default: 
-					System.out.print("Not a valid option."); 
+				default:
+					System.out.print("Not a valid option.");
 					break;
 			}
 			System.out.println();
@@ -60,40 +63,40 @@ public class Customer extends User {
 
 	private void browseProd() {
 
-		//list all root categories 
+		//list all root categories
 
-		System.out.println("List of Categories: "); 
-		
+		System.out.println("List of Categories: ");
+
 		query = "SELECT * "
-		+ "FROM Category"; 
-		
-		resultSet = statement.excecuteQuery(query); 
+		+ "FROM Category";
 
-		String name = resultSet.getString("name"); 
+		resultSet = statement.excecuteQuery(query);
 
-		while(resultSet.next()) 
+		String name = resultSet.getString("name");
+
+		while(resultSet.next())
 			printf("%s\n", name);
 
-		//need while loop for cateogory heirarchy 
+		//need while loop for cateogory heirarchy
 
-		System.out.println("Select a category: "); 
-		String cat = input.nextLine().toLowerCase(); 
-		
-		System.out.println("Sort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): "); 
-		char sort = input.nextLine().toLowerCase(); 
+		System.out.println("Select a category: ");
+		String cat = input.nextLine().toLowerCase();
+
+		System.out.println("Sort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
+		char sort = input.nextLine().toLowerCase();
 
 		switch (sort) {
-			case 'a': 
+			case 'a':
 				query = "SELECT auction_id, name, description "
 					+ "FROM Product"
 					+ "WHERE EXISTS (SELECT auction_id "
 					+ "FROM BelongsTo "
 					+ "WHERE Category LIKE '%" + cat + "%')"
-					+ "ORDER BY name ASC"; 
+					+ "ORDER BY name ASC";
 
 					try {
-						statement = connection.createStatement(); 
-						resultSet = statement.executeQuery(query); 
+						statement = connection.createStatement();
+						resultSet = statement.executeQuery(query);
 
 						System.out.println("Returned result(s):");
 						if(!resultSet.next()) {
@@ -103,25 +106,25 @@ public class Customer extends User {
 
 						int i = 1;
 						do {
-							System.out.print(i + ") "); 
-							System.out.print(resultSet.getInt(1) + ", "); 
+							System.out.print(i + ") ");
+							System.out.print(resultSet.getInt(1) + ", ");
 							System.out.print(resultSet.getString(2) + "\", ");
 							System.out.print(resultSet.getString(3) + "\"");
-							i++;  
+							i++;
 						} while(resultSet.next());
 					} catch(SQLException ex) {
 						System.err.println("Error retrieving entries from database: " + ex);
 					}
 				}
-				break; 
+				break;
 			case 'h':
-				 
 
-				break; 
-			default: 
 
 				break;
-		} 
+			default:
+
+				break;
+		}
 
 	}
 
@@ -166,7 +169,174 @@ public class Customer extends User {
 
 	private void bid() {}
 
-	private void sell() {}
+	private void openSellMenu() {
+		int auction_id = getProductId();
+
+		if(auction_id < 0) return;
+
+		String name = getProductName(auction_id);
+		if(name == null) {
+			System.out.println("Error fetching product #" + auction_id);
+			return;
+		}
+
+		System.out.println("Selling product \"" + name + "\"...");
+
+		System.out.print("Second highest bid: ");
+		int bidsn = getProductBidSN(auction_id);
+
+		if(bidsn < 0) {
+			System.out.println("Fetching bid failed!");
+			return;
+		}
+
+		openSellOrRemoveMenu(name, auction_id, bidsn);
+	}
+
+	private void openSellOrRemoveMenu(String name, int auction_id, int bidsn) {
+		int i = 1;
+		int amount = 0;
+		if(bidsn > 0) {
+			amount = getBidlogAmount(bidsn);
+			if(amount < 0) {
+				System.out.println("Fetching bid amount failed!");
+				return;
+			}
+			System.out.println("Selling price: " + amount);
+			System.out.println(i + ". Sell \"" + name + "\"");
+			i++;
+		} else {
+			System.out.println("No bids.");
+		}
+
+		System.out.println(i + ". Remove \"" + name + "\"");
+		System.out.println("0. Cancel");
+
+		char answer = Prompter.getChoice('0', Character.forDigit(i, 10));
+		switch(answer) {
+			case '1':
+			if(bidsn > 0) {
+				String buyer = getBidlogBidder(bidsn);
+				sellProduct(auction_id, buyer, amount);
+				break;
+			}
+			// fall through
+
+			case '2':
+			removeProduct(auction_id);
+			break;
+
+			default: break;
+		}
+	}
+
+	private void sellProduct(int auction_id, String buyer, int amount) {
+		String query = "UPDATE Product "
+			+ "SET status='sold',buyer=?,amount=?"
+			+ "WHERE auction_id=?";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, buyer);
+			statement.setInt(2, amount);
+			statement.setInt(3, auction_id);
+			statement.executeUpdate();
+		} catch(SQLException ex) {
+			System.out.println("Selling product failed!");
+		}
+	}
+
+	private void removeProduct(int auction_id) {
+		String query = "DELETE FROM Product WHERE auction_id=?";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, auction_id);
+			statement.executeUpdate();
+		} catch(SQLException ex) {
+			System.out.println("Removing product failed!");
+		}
+	}
+
+	private int getProductBidSN(int auction_id) {
+		String query = "SELECT bidsn FROM BidLog "
+			+ "WHERE auction_id=? "
+			+ "ORDER BY amount DESC "
+			+ "FETCH FIRST 2 ROWS ONLY";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, auction_id);
+			ResultSet resultSet = statement.executeQuery();
+
+			// first highest bid
+			if(!resultSet.next()) return 0;
+			int bidsn = resultSet.getInt(1);
+
+			// second highest bid
+			if(!resultSet.next()) return bidsn;
+			return resultSet.getInt(1);
+		} catch(SQLException ex) {
+			return -1;
+		}
+	}
+
+	private int getBidlogAmount(int bidsn) {
+		try {
+			ResultSet resultSet = getRowFromTable("BidLog", "bidsn", bidsn);
+			return resultSet != null ? resultSet.getInt("amount") : 0;
+		} catch(SQLException ex) {
+			return -1;
+		}
+	}
+
+	private String getBidlogBidder(int bidsn) {
+		try {
+			ResultSet resultSet = getRowFromTable("BidLog", "bidsn", bidsn);
+			return resultSet != null ? resultSet.getString("bidder") : null;
+		} catch(SQLException ex) {
+			return null;
+		}
+	}
+
+	private String getProductName(int auction_id) {
+		try {
+			ResultSet resultSet = getRowFromTable("Product", "auction_id", auction_id);
+			return resultSet != null ? resultSet.getString("name") : null;
+		} catch(SQLException ex) {
+			return null;
+		}
+	}
+
+	private int getProductId() {
+		System.out.println("Listed Products:");
+
+		String query = "SELECT auction_id,name FROM Product WHERE seller=?";
+		try {
+			PreparedStatement statement = connection.prepareStatement(query);
+      statement.setString(1, login);
+      ResultSet resultSet = statement.executeQuery();
+
+			if(!resultSet.next()) {
+				System.out.println("No products listed for sale.");
+				return -1;
+			}
+
+			int i = 0;
+			List<Integer> ids = new ArrayList<Integer>();
+			do {
+				i++;
+				ids.add(resultSet.getInt(1));
+				System.out.print(i + ") ");
+				System.out.println("\"" + resultSet.getString(2) + "\"");
+			} while(resultSet.next());
+			System.out.println("0) Cancel");
+		} catch(SQLException ex) {
+			System.err.println("Error retrieving products from database: " + ex);
+			return -1;
+		}
+
+		char answer = Prompter.getInt("Sell no.: ", 0, i);
+		if(answer == 0) return -1;
+		return ids.get(i);
+	}
 
 	private void suggestion() {}
 }

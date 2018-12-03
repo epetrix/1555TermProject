@@ -7,8 +7,8 @@ INSERT INTO Customer VALUES('abc456', 'dogs', 'Alice', '200 Cathy Blvd', 'alice@
 INSERT INTO Administrator VALUES('admin', 'root', 'Bob', '123 Sennott St', 'bob@pitt.edu');
 
 INSERT INTO Product VALUES(1, 'toaster', 'toasts bread', 'adk67', '21-JUN-2014', 20, 10, 'sold', 'abc456', SYSDATE, 1276);
-INSERT INTO Product VALUES(2, 'Macbook Pro 2018', 'brand new Apple computer', 'abc456', SYSDATE, 1500, 30, 'not sold', null, null, 0);
-INSERT INTO Product VALUES(3, 'Bose QC30 Headphones', 'sound cancelling headphones', 'adk67', SYSDATE, 300, 15, 'not sold', null, null, 0);
+INSERT INTO Product VALUES(2, 'Macbook Pro 2018', 'brand new Apple computer', 'abc456', SYSDATE, 1500, 30, 'not sold', null, null, null);
+INSERT INTO Product VALUES(3, 'Bose QC30 Headphones', 'sound cancelling headphones', 'adk67', SYSDATE, 300, 15, 'not sold', null, null, null);
 INSERT INTO Product VALUES(4, 'IPhone XR', 'brand new IPhone', 'xyz123', '01-JAN-2019', 300, 15, 'sold', 'abc456', SYSDATE, 1000);
 INSERT INTO Product VALUES(5, 'Hydro Flask', 'new water bottle', 'xyz123', SYSDATE, 30, 4, 'not sold', 'adk67', SYSDATE, 3);
 

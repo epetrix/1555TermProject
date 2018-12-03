@@ -34,6 +34,16 @@ public class Prompter {
     return answer;
   }
 
+  public static int getInt(String prompt, int start, int end) {
+    int answer;
+    while(true) {
+      answer = getInt(prompt);
+      if(answer >= start && answer <= end) break;
+      System.out.println("Answer must fall between " + start + " and " + end);
+    }
+    return answer;
+  }
+
   public static char getChoice(char start, char end) {
     char answer;
     start = Character.toLowerCase(start);
