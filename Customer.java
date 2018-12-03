@@ -1,6 +1,7 @@
 import java.sql.*;
 
 public class Customer extends User {
+	
 	private Statement statement;
 	private ResultSet resultSet;
 	private String query;
@@ -27,6 +28,7 @@ public class Customer extends User {
 		do {
 			displayMenu();
 			task = Prompter.getChoice('1', '7');
+			
 			switch (task) {
 				case '1':
 					browseProd();
@@ -48,12 +50,80 @@ public class Customer extends User {
 					break;
 				case '7':
 					break;
+				default: 
+					System.out.print("Not a valid option."); 
+					break;
 			}
 			System.out.println();
 		} while (task != '7');
 	}
 
-	private void browseProd() {}
+	private void browseProd() {
+
+		//list all root categories 
+
+		System.out.println("List of Categories: "); 
+		
+		query = "SELECT * "
+		+ "FROM Category"; 
+		
+		resultSet = statement.excecuteQuery(query); 
+
+		String name = resultSet.getString("name"); 
+
+		while(resultSet.next()) 
+			printf("%s\n", name);
+
+		//need while loop for cateogory heirarchy 
+
+		System.out.println("Select a category: "); 
+		String cat = input.nextLine().toLowerCase(); 
+		
+		System.out.println("Sort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): "); 
+		char sort = input.nextLine().toLowerCase(); 
+
+		switch (sort) {
+			case 'a': 
+				query = "SELECT auction_id, name, description "
+					+ "FROM Product"
+					+ "WHERE EXISTS (SELECT auction_id "
+					+ "FROM BelongsTo "
+					+ "WHERE Category LIKE '%" + cat + "%')"
+					+ "ORDER BY name ASC"; 
+
+					try {
+						statement = connection.createStatement(); 
+						resultSet = statement.executeQuery(query); 
+
+						System.out.println("Returned result(s):");
+						if(!resultSet.next()) {
+							System.out.println("No items matched the given keywords.");
+							return;
+						}
+
+						int i = 1;
+						do {
+							System.out.print(i + ") "); 
+							System.out.print(resultSet.getInt(1) + ", "); 
+							System.out.print(resultSet.getString(2) + "\", ");
+							System.out.print(resultSet.getString(3) + "\"");
+							i++;  
+						} while(resultSet.next());
+					} catch(SQLException ex) {
+						System.err.println("Error retrieving entries from database: " + ex);
+					}
+				}
+				break; 
+			case 'h':
+				 
+
+				break; 
+			default: 
+
+				break;
+		} 
+
+	}
 
 	private void search() {
 		System.out.println("Search up to two keywords: ");
@@ -90,7 +160,9 @@ public class Customer extends User {
 		}
 	}
 
-	private void auction() {}
+	private void auction() {
+
+	}
 
 	private void bid() {}
 
