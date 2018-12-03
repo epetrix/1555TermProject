@@ -77,27 +77,27 @@ public class Customer extends User {
 
 			while(resultSet.next()) {
 				String name = resultSet.getString("name");
-				System.out.printf("%s\n", name);
+				System.out.println(name);
 			}
 
-
-			System.out.println("\nSelect a category: ");
-			String cat = input.nextLine();
+			System.out.print("\nSelect a category: ");
+			String cat = input.nextLine().toLowerCase();
 
 			query = "SELECT name "
 			+ "FROM Category "
-			+ "WHERE parent_category LIKE '%" + cat + "%'";
+			+ "WHERE LOWER(parent_category) LIKE '" + cat + "%'";
 
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 
+			System.out.println("\nList of Subcategories: ");
 			while(resultSet.next()) {
 				String name = resultSet.getString("name");
-				System.out.printf("%s\n", name);
+				System.out.println(name);
 			}
 
-			System.out.print("\nSelect a category: ");
-			cat = input.nextLine();
+			System.out.print("\nSelect a subcategory: ");
+			cat = input.nextLine().toLowerCase();
 
 			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
 			char sort = Character.toLowerCase(input.nextLine().charAt(0));
@@ -105,10 +105,8 @@ public class Customer extends User {
 			switch (sort) {
 				case 'a':
 					query = "SELECT auction_id, name, description "
-						+ "FROM Product "
-						+ "WHERE auction_id = (SELECT auction_id "
-						+ "FROM BelongsTo "
-						+ "WHERE Category LIKE '%" + cat + "%')"
+						+ "FROM Product NATURAL JOIN BelongsTo "
+						+ "WHERE LOWER(category) LIKE '" + cat + "%' "
 						+ "ORDER BY name ASC";
 
 							statement = connection.createStatement();
@@ -180,8 +178,8 @@ public class Customer extends User {
 	private void bid() {}
 
 	private void openSellMenu() {
+		System.out.println();
 		int auction_id = getProductId();
-
 		if(auction_id < 0) return;
 
 		String name = getProductName(auction_id);
