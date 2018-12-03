@@ -65,67 +65,79 @@ public class Customer extends User {
 
 		//list all root categories
 
-		System.out.println("List of Categories: ");
+		System.out.println("\nList of Categories: ");
 
-		query = "SELECT * "
-		+ "FROM Category";
+		query = "SELECT name "
+		+ "FROM Category "
+		+ "WHERE parent_category IS NULL";
 
-		resultSet = statement.excecuteQuery(query);
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
 
-		String name = resultSet.getString("name");
-
-		while(resultSet.next())
-			printf("%s\n", name);
-
-		//need while loop for cateogory heirarchy
-
-		System.out.println("Select a category: ");
-		String cat = input.nextLine().toLowerCase();
-
-		System.out.println("Sort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
-		char sort = input.nextLine().toLowerCase();
-
-		switch (sort) {
-			case 'a':
-				query = "SELECT auction_id, name, description "
-					+ "FROM Product"
-					+ "WHERE EXISTS (SELECT auction_id "
-					+ "FROM BelongsTo "
-					+ "WHERE Category LIKE '%" + cat + "%')"
-					+ "ORDER BY name ASC";
-
-					try {
-						statement = connection.createStatement();
-						resultSet = statement.executeQuery(query);
-
-						System.out.println("Returned result(s):");
-						if(!resultSet.next()) {
-							System.out.println("No items matched the given keywords.");
-							return;
-						}
-
-						int i = 1;
-						do {
-							System.out.print(i + ") ");
-							System.out.print(resultSet.getInt(1) + ", ");
-							System.out.print(resultSet.getString(2) + "\", ");
-							System.out.print(resultSet.getString(3) + "\"");
-							i++;
-						} while(resultSet.next());
-					} catch(SQLException ex) {
-						System.err.println("Error retrieving entries from database: " + ex);
-					}
-				}
-				break;
-			case 'h':
+			while(resultSet.next()) {
+				String name = resultSet.getString("name");
+				System.out.printf("%s\n", name);
+			}
 
 
-				break;
-			default:
+			System.out.println("\nSelect a category: ");
+			String cat = input.nextLine();
 
-				break;
+			query = "SELECT name "
+			+ "FROM Category "
+			+ "WHERE parent_category LIKE '%" + cat + "%'";
+
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+
+			while(resultSet.next()) {
+				String name = resultSet.getString("name");
+				System.out.printf("%s\n", name);
+			}
+
+			System.out.print("\nSelect a category: ");
+			cat = input.nextLine();
+
+			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
+			String sort = input.nextLine().toLowerCase();
+
+			switch (sort) {
+				case "a":
+					query = "SELECT auction_id, name, description "
+						+ "FROM Product "
+						+ "WHERE auction_id =  (SELECT auction_id "
+						+ "FROM BelongsTo "
+						+ "WHERE Category LIKE '%" + cat + "%')"
+						+ "ORDER BY name ASC";
+
+							statement = connection.createStatement();
+							resultSet = statement.executeQuery(query);
+
+							System.out.println("Returned result(s):");
+							if(!resultSet.next()) {
+								System.out.println("No items matched the given keywords.");
+								return;
+							}
+
+							int i = 1;
+							do {
+								System.out.print("\n" + i + ") ");
+								System.out.print(resultSet.getInt(1) + ", ");
+								System.out.print(resultSet.getString(2) + "\", ");
+								System.out.print(resultSet.getString(3) + "\"");
+								i++;
+							} while(resultSet.next());
+					break;
+				case "h":
+
+
+
+					break;
+			}
+		} catch (Exception ex) {
+			System.err.println("Error: " + ex);
 		}
-
 	}
 
 	private void search() {
