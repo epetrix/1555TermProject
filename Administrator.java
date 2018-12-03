@@ -24,10 +24,11 @@ public class Administrator extends User {
     System.out.println("********************");
     System.out.println("* Other Statistics *");
     System.out.println("********************");
-    System.out.println("1. Highest volume categories");
-    System.out.println("2. Most active bidders");
-    System.out.println("3. Most active buyers");
-    System.out.println("4. Exit menu");
+    System.out.println("1. Highest volume leaf categories");
+    System.out.println("2. Highest volume root categories");
+    System.out.println("3. Most active bidders");
+    System.out.println("4. Most active buyers");
+    System.out.println("5. Exit menu");
     System.out.println();
   }
 
@@ -108,14 +109,13 @@ public class Administrator extends User {
     }
 
     try {
-      PreparedStatement stmt = connection.prepareStatement(query);
-      stmt.setString(1, login);
-      stmt.setString(2, password);
-      stmt.setString(3, name);
-      stmt.setString(4, address);
-      stmt.setString(5, email);
-
-      stmt.executeUpdate();
+      PreparedStatement statement = connection.prepareStatement(query);
+      statement.setString(1, login);
+      statement.setString(2, password);
+      statement.setString(3, name);
+      statement.setString(4, address);
+      statement.setString(5, email);
+      statement.executeUpdate();
       return true;
     } catch(SQLException ex) {
       return false;
@@ -145,9 +145,9 @@ public class Administrator extends User {
       java.sql.Date sysTime = new java.sql.Date(date.getTime());
 
       String query = "UPDATE ourSysDATE SET c_date = ?";
-      PreparedStatement stmt = connection.prepareStatement(query);
-      stmt.setDate(1, sysTime);
-      stmt.executeUpdate();
+      PreparedStatement statement = connection.prepareStatement(query);
+      statement.setDate(1, sysTime);
+      statement.executeUpdate();
 
       return true;
     } catch(ParseException ex) {
@@ -168,20 +168,21 @@ public class Administrator extends User {
       String login = input.nextLine();
       query += " WHERE seller = '" + login + "'";
     }
+    query += " ORDER BY name";
 
     System.out.println("Result:");
     try {
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(query);
       if(!resultSet.next()) {
-        System.out.println("No products returned.");
+        System.out.println("No products found.");
         return;
       }
 
       String format = "| %-20s | %-8s | %-8d | %-10s |";
       String titleFormat = format.replace('d', 's');
       System.out.println("+----------------------+----------+----------+------------+");
-      System.out.println(String.format(titleFormat, "Name", "Status", "Bid", "Bidder"));
+      System.out.println(String.format(titleFormat, "Name", "Status", "High Bid", "Bidder"));
       System.out.println("+----------------------+----------+----------+------------+");
       do {
         printProduct(resultSet, format);
@@ -206,7 +207,7 @@ public class Administrator extends User {
     System.out.println();
 
     char answer;
-    char quit = '4';
+    char quit = '5';
     do {
       System.out.println("Months: " + months);
       System.out.println("Total: " + total);
@@ -215,14 +216,18 @@ public class Administrator extends User {
       answer = Prompter.getChoice('1', quit);
       switch(answer) {
         case '1':
-        getBestCategories(months, total);
+        getBestLeafCategories(months, total);
         break;
 
         case '2':
-        getActiveBidders(months, total);
+        getBestRootCategories(months, total);
         break;
 
         case '3':
+        getActiveBidders(months, total);
+        break;
+
+        case '4':
         getActiveBuyers(months, total);
         break;
       }
@@ -230,8 +235,53 @@ public class Administrator extends User {
     } while(answer != quit);
   }
 
-  private void getBestCategories(int months, int total) {
-    System.out.println("Getting top " + total + " highest volume categories...");
+  private void getBestLeafCategories(int months, int total) {
+    String whereClause = "WHERE NOT EXISTS ("
+      + "SELECT 1 FROM Category C2 "
+      + "WHERE C1.name = C2.parent_category"
+      + ")";
+    System.out.println("Getting top " + total + " highest volume leaf categories...");
+    getBestCategories(whereClause, months, total);
+  }
+
+  private void getBestRootCategories(int months, int total) {
+    String whereClause = "WHERE parent_category IS NULL";
+    System.out.println("Getting top " + total + " highest volume root categories...");
+    getBestCategories(whereClause, months, total);
+  }
+
+  private void getBestCategories(String whereClause, int months, int total) {
+    System.out.println("Result:");
+    String query = "SELECT name,func_productCount(name,?) as count "
+      + "FROM Category C1 "
+      + whereClause + " "
+      + "ORDER BY count DESC,name ASC";
+    try {
+      PreparedStatement statement = connection.prepareStatement(query);
+      statement.setInt(1, months);
+      ResultSet resultSet = statement.executeQuery();
+
+      int i = 0;
+      if(!resultSet.next() || total <= 0) {
+        System.out.println("No categories found.");
+        return;
+      }
+
+      String format = "| %-20s | %-13d |";
+      String titleFormat = format.replace('d', 's');
+      System.out.println("+----------------------+---------------+");
+      System.out.println(String.format(titleFormat, "Category", "Products Sold"));
+      System.out.println("+----------------------+---------------+");
+      do {
+        String name = resultSet.getString(1);
+        int count = resultSet.getInt(2);
+        System.out.println(String.format(format, name, count));
+      } while(++i < total && resultSet.next());
+      System.out.println("+----------------------+---------------+");
+    } catch(SQLException ex) {
+      System.out.println("Fetching categories failed!");
+      System.out.println(ex);
+    }
   }
 
   private void getActiveBidders(int months, int total) {
