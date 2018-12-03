@@ -122,8 +122,8 @@ public class Customer extends User {
 							do {
 								System.out.print("\n" + i + ") ");
 								System.out.print(resultSet.getInt(1) + ", ");
-								System.out.print(resultSet.getString(2) + "\", ");
-								System.out.print(resultSet.getString(3) + "\"");
+								System.out.print("\"" + resultSet.getString(2) + "\", ");
+								System.out.print("\"" + resultSet.getString(3) + "\"");
 								i++;
 							} while(resultSet.next());
 					break;
@@ -181,25 +181,22 @@ public class Customer extends User {
         System.out.print("Enter Categories: ");
         String[] categories = input.nextLine().split("\\s+");
 
-        System.out.print("Enter number of days for auction: ");
-        int days = input.nextInt();
+        int days = Prompter.getInt("Enter number of days for auction: ");
 
         query = "DECLARE "
         	+ "id NUMBER; "
         	+ "BEGIN "
-        	+ "proc_putProduct(?,?,?,?,?,?,id); "
-        	+ "END; "
-        	+ "/";
+        	+ "proc_putProduct(?,?,?,?,?,id); "
+        	+ "END;";
 
         try {
         	PreparedStatement statement = connection.prepareStatement(query);
         	statement.setString(1, name);
         	statement.setString(2, description);
-        	statement.setString(3, "seller");
+        	statement.setString(3, login);
         	statement.setInt(4, days);
         	statement.setString(5, categories[0]);
         	statement.execute();
-
         } catch (SQLException ex) {
         	ex.printStackTrace();
         }
