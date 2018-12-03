@@ -168,7 +168,10 @@ public class Administrator extends User {
       String login = input.nextLine();
       query += " WHERE seller = '" + login + "'";
     }
-    query += " ORDER BY name";
+    query += " ORDER BY "
+      + "CASE WHEN status='sold' "
+      + "THEN 0 ELSE 1 "
+      + "END ASC,amount DESC,name ASC";
 
     System.out.println("Result:");
     try {
@@ -198,6 +201,7 @@ public class Administrator extends User {
     String status = resultSet.getString(2);
     int bid = resultSet.getInt(3);
     String bidder = resultSet.getString(4);
+    if(bidder == null) bidder = "";
     System.out.println(String.format(format, name, status, bid, bidder));
   }
 
@@ -251,18 +255,20 @@ public class Administrator extends User {
   }
 
   private void getBestCategories(String whereClause, int months, int total) {
-    System.out.println("Result:");
     String query = "SELECT name,func_productCount(name,?) as count "
       + "FROM Category C1 "
       + whereClause + " "
-      + "ORDER BY count DESC,name ASC";
+      + "ORDER BY count DESC,name ASC "
+      + "FETCH FIRST ? ROWS ONLY";
+
+    System.out.println("Result:");
     try {
       PreparedStatement statement = connection.prepareStatement(query);
       statement.setInt(1, months);
+      statement.setInt(2, total);
       ResultSet resultSet = statement.executeQuery();
 
-      int i = 0;
-      if(!resultSet.next() || total <= 0) {
+      if(!resultSet.next()) {
         System.out.println("No categories found.");
         return;
       }
@@ -276,19 +282,55 @@ public class Administrator extends User {
         String name = resultSet.getString(1);
         int count = resultSet.getInt(2);
         System.out.println(String.format(format, name, count));
-      } while(++i < total && resultSet.next());
+      } while(resultSet.next());
       System.out.println("+----------------------+---------------+");
     } catch(SQLException ex) {
       System.out.println("Fetching categories failed!");
-      System.out.println(ex);
     }
   }
 
   private void getActiveBidders(int months, int total) {
-    System.out.println("Getting top " + total + " most active bidders...");
+    getAciveCustomers("Bidder", "Bids", "func_bidCount", months, total);
   }
 
   private void getActiveBuyers(int months, int total) {
-    System.out.println("Getting top " + total + " most active buyers...");
+    getAciveCustomers("Buyer", "Amount", "func_buyingAmount", months, total);
+  }
+
+  private void getAciveCustomers(String row1, String row2, String func, int months, int total) {
+    String pluralTerm = row1.toLowerCase() + "s";
+    System.out.println("Getting top " + total + " most active " + pluralTerm + "...");
+
+    String query = "SELECT login," + func + "(login,?) as count "
+      + "FROM Customer "
+      + "ORDER BY count DESC,login ASC "
+      + "FETCH FIRST ? ROWS ONLY";
+
+    System.out.println("Result:");
+    try {
+      PreparedStatement statement = connection.prepareStatement(query);
+      statement.setInt(1, months);
+      statement.setInt(2, total);
+      ResultSet resultSet = statement.executeQuery();
+
+      if(!resultSet.next()) {
+        System.out.println("No " + pluralTerm + " found.");
+        return;
+      }
+
+      String format = "| %-10s | %-8d |";
+      String titleFormat = format.replace('d', 's');
+      System.out.println("+------------+----------+");
+      System.out.println(String.format(titleFormat, row1, row2));
+      System.out.println("+------------+----------+");
+      do {
+        String login = resultSet.getString(1);
+        int count = resultSet.getInt(2);
+        System.out.println(String.format(format, login, count));
+      } while(resultSet.next());
+      System.out.println("+------------+----------+");
+    } catch(SQLException ex) {
+      System.out.println("Fetching " + pluralTerm + " failed!");
+    }
   }
 }
