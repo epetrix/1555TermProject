@@ -100,13 +100,13 @@ public class Customer extends User {
 			cat = input.nextLine();
 
 			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
-			String sort = input.nextLine().toLowerCase();
+			char sort = Character.toLowerCase(input.nextLine().charAt(0));
 
 			switch (sort) {
-				case "a":
+				case 'a':
 					query = "SELECT auction_id, name, description "
 						+ "FROM Product "
-						+ "WHERE auction_id =  (SELECT auction_id "
+						+ "WHERE auction_id = (SELECT auction_id "
 						+ "FROM BelongsTo "
 						+ "WHERE Category LIKE '%" + cat + "%')"
 						+ "ORDER BY name ASC";
@@ -129,10 +129,8 @@ public class Customer extends User {
 								i++;
 							} while(resultSet.next());
 					break;
-				case "h":
 
-
-
+				case 'h':
 					break;
 			}
 		} catch (Exception ex) {
@@ -320,6 +318,8 @@ public class Customer extends User {
 	private int getProductId() {
 		System.out.println("Listed Products:");
 
+		int i = 0;
+		List<Integer> ids = new ArrayList<Integer>();
 		String query = "SELECT auction_id,name FROM Product WHERE seller=?";
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
@@ -331,8 +331,6 @@ public class Customer extends User {
 				return -1;
 			}
 
-			int i = 0;
-			List<Integer> ids = new ArrayList<Integer>();
 			do {
 				i++;
 				ids.add(resultSet.getInt(1));
@@ -345,7 +343,7 @@ public class Customer extends User {
 			return -1;
 		}
 
-		char answer = Prompter.getInt("Sell no.: ", 0, i);
+		int answer = Prompter.getInt("Sell no.: ", 0, i);
 		if(answer == 0) return -1;
 		return ids.get(i);
 	}
