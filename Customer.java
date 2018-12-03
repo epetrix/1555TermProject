@@ -175,7 +175,7 @@ public class Customer extends User {
 		System.out.print("Enter name of product: ");
         String name = input.nextLine();
 
-        System.out.print("Enter description: ");
+        System.out.print("Enter (optional) description: ");
         String description = input.nextLine();
 
         System.out.print("Enter Categories: ");
@@ -189,19 +189,19 @@ public class Customer extends User {
         	+ "BEGIN "
         	+ "proc_putProduct(?,?,?,?,?,?,id); "
         	+ "END; "
-        	+ "/"; 
+        	+ "/";
 
         try {
         	PreparedStatement statement = connection.prepareStatement(query);
-        	statement.setString(1, name); 
-        	statement.setString(2, description); 
+        	statement.setString(1, name);
+        	statement.setString(2, description);
         	statement.setString(3, "seller");
-        	statement.setInt(4, days); 
-        	statement.setString(5, category); 
-        	statement.execute(); 
-        
+        	statement.setInt(4, days);
+        	statement.setString(5, categories[0]);
+        	statement.execute();
+
         } catch (SQLException ex) {
-        	ex.printStackTrace(); 
+        	ex.printStackTrace();
         }
 	}
 
