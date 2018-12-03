@@ -178,7 +178,7 @@ public class Administrator extends User {
         return;
       }
 
-      String format = "| %20s | %8s | %8d | %10s |";
+      String format = "| %-20s | %-8s | %-8d | %-10s |";
       String titleFormat = format.replace('d', 's');
       System.out.println("+----------------------+----------+----------+------------+");
       System.out.println(String.format(titleFormat, "Name", "Status", "Bid", "Bidder"));
