@@ -35,7 +35,7 @@ CREATE OR REPLACE FUNCTION func_buyingAmount(u IN VARCHAR2, x IN NUMBER)
   total NUMBER;
 
   BEGIN
-    SELECT sum(P.amount) INTO total
+    SELECT NVL(sum(P.amount), 0) INTO total
       FROM Product P CROSS JOIN ourSysDATE O
       WHERE P.status = 'sold'
         AND P.buyer = u
@@ -90,7 +90,7 @@ IS
   currTime date;
 BEGIN
   SELECT c_date INTO currTime FROM ourSysDATE;
-  SELECT max(auction_id) INTO id FROM Product;
+  SELECT NVL(max(auction_id), 0) INTO id FROM Product;
   id := id + 1;
   INSERT INTO Product VALUES(id, name, descr, seller, currTime, minPrice, days, 'not sold', null, null, null);
   INSERT INTO BelongsTo VALUES(id, cat);
