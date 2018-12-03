@@ -144,5 +144,44 @@ public class Administrator extends User {
 
   private void getProductStats() {
     System.out.println("Getting product statistics...");
+    System.out.print("Get products from specific customer? (Y/n): ");
+    boolean isAll = !Prompter.getBoolean();
+
+    String query = "SELECT name,status,amount,buyer FROM Product";
+    if(!isAll) {
+      System.out.print("login: ");
+      String login = input.nextLine();
+      query += " WHERE seller = '" + login + "'";
+    }
+
+    System.out.println("Result:");
+    try {
+      Statement statement = connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(query);
+      if(!resultSet.next()) {
+        System.out.println("No products returned.");
+        return;
+      }
+
+      String format = "| %-20s | %-8s | %-8d | %-10s |";
+      String titleFormat = format.replace('d', 's');
+      System.out.println("+----------------------+----------+----------+------------+");
+      System.out.println(String.format(titleFormat, "Name", "Status", "Bid", "Bidder"));
+      System.out.println("+----------------------+----------+----------+------------+");
+      do {
+        printProduct(resultSet, format);
+      } while(resultSet.next());
+      System.out.println("+----------------------+----------+----------+------------+");
+    } catch(SQLException ex) {
+      System.out.println("Getting product statistics failed!");
+    }
+  }
+
+  private void printProduct(ResultSet resultSet, String format) throws SQLException {
+    String name = resultSet.getString(1);
+    String status = resultSet.getString(2);
+    int bid = resultSet.getInt(3);
+    String bidder = resultSet.getString(4);
+    System.out.println(String.format(format, name, status, bid, bidder));
   }
 }

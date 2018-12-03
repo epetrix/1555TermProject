@@ -60,7 +60,9 @@ AFTER INSERT ON Bidlog
 FOR EACH ROW
 BEGIN
     UPDATE Product
-    SET amount = :NEW.amount;
+    SET amount = :NEW.amount, buyer = :NEW.bidder
+    WHERE :NEW.auction_id = auction_id
+      AND :NEW.amount > amount;
 END;
 /
 
