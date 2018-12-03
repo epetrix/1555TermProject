@@ -15,15 +15,28 @@ public class Administrator extends User {
     System.out.println("1. New customer registration");
     System.out.println("2. Update system date");
     System.out.println("3. Product statistics");
+    System.out.println("4. Other statistics");
+    System.out.println("5. Exit menu");
+    System.out.println();
+  }
+
+  private void displayStatsMenu() {
+    System.out.println("********************");
+    System.out.println("* Other Statistics *");
+    System.out.println("********************");
+    System.out.println("1. Highest volume categories");
+    System.out.println("2. Most active bidders");
+    System.out.println("3. Most active buyers");
     System.out.println("4. Exit menu");
     System.out.println();
   }
 
   public void openMenu() {
     char answer;
+    char quit = '5';
     do {
       displayMenu();
-      answer = Prompter.getChoice('1', '4');
+      answer = Prompter.getChoice('1', quit);
       switch(answer) {
         case '1':
         registerCustomer();
@@ -38,10 +51,12 @@ public class Administrator extends User {
         break;
 
         case '4':
+        getStatistics();
+        System.out.println("Exiting stats menu...");
         break;
       }
       System.out.println();
-    } while(answer != '4');
+    } while(answer != quit);
   }
 
   private void registerCustomer() {
@@ -163,7 +178,7 @@ public class Administrator extends User {
         return;
       }
 
-      String format = "| %-20s | %-8s | %-8d | %-10s |";
+      String format = "| %20s | %8s | %8d | %10s |";
       String titleFormat = format.replace('d', 's');
       System.out.println("+----------------------+----------+----------+------------+");
       System.out.println(String.format(titleFormat, "Name", "Status", "Bid", "Bidder"));
@@ -183,5 +198,47 @@ public class Administrator extends User {
     int bid = resultSet.getInt(3);
     String bidder = resultSet.getString(4);
     System.out.println(String.format(format, name, status, bid, bidder));
+  }
+
+  private void getStatistics() {
+    int months = Prompter.getInt("Number of months back: ");
+    int total =  Prompter.getInt("Total from top: ");
+    System.out.println();
+
+    char answer;
+    char quit = '4';
+    do {
+      System.out.println("Months: " + months);
+      System.out.println("Total: " + total);
+      displayStatsMenu();
+
+      answer = Prompter.getChoice('1', quit);
+      switch(answer) {
+        case '1':
+        getBestCategories(months, total);
+        break;
+
+        case '2':
+        getActiveBidders(months, total);
+        break;
+
+        case '3':
+        getActiveBuyers(months, total);
+        break;
+      }
+      System.out.println();
+    } while(answer != quit);
+  }
+
+  private void getBestCategories(int months, int total) {
+    System.out.println("Getting top " + total + " highest volume categories...");
+  }
+
+  private void getActiveBidders(int months, int total) {
+    System.out.println("Getting top " + total + " most active bidders...");
+  }
+
+  private void getActiveBuyers(int months, int total) {
+    System.out.println("Getting top " + total + " most active buyers...");
   }
 }

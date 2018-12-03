@@ -18,6 +18,22 @@ public class Prompter {
     return input.nextLine().toLowerCase().equals("y");
   }
 
+  public static int getInt(String prompt) {
+    int answer;
+    while(true) {
+      System.out.print(prompt);
+      String line = input.nextLine();
+
+      try {
+        answer = Integer.parseInt(line);
+        break;
+      } catch(NumberFormatException ex) {
+        System.out.println("Answer must be an integer!");
+      }
+    }
+    return answer;
+  }
+
   public static char getChoice(char start, char end) {
     char answer;
     start = Character.toLowerCase(start);
