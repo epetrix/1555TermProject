@@ -172,10 +172,42 @@ public class Customer extends User {
 	}
 
 	private void auction() {
+		System.out.print("Enter name of product: ");
+        String name = input.nextLine();
 
+        System.out.print("Enter description: ");
+        String description = input.nextLine();
+
+        System.out.print("Enter Categories: ");
+        String[] categories = input.nextLine().split("\\s+");
+
+        System.out.print("Enter number of days for auction: ");
+        int days = input.nextInt();
+
+        query = "DECLARE "
+        	+ "id NUMBER; "
+        	+ "BEGIN "
+        	+ "proc_putProduct(?,?,?,?,?,?,id); "
+        	+ "END; "
+        	+ "/"; 
+
+        try {
+        	PreparedStatement statement = connection.prepareStatement(query);
+        	statement.setString(1, name); 
+        	statement.setString(2, description); 
+        	statement.setString(3, "seller");
+        	statement.setInt(4, days); 
+        	statement.setString(5, category); 
+        	statement.execute(); 
+        
+        } catch (SQLException ex) {
+        	ex.printStackTrace(); 
+        }
 	}
 
-	private void bid() {}
+	private void bid() {
+
+	}
 
 	private void openSellMenu() {
 		System.out.println();
