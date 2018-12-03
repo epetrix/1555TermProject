@@ -82,7 +82,6 @@ CREATE OR REPLACE PROCEDURE proc_putProduct(
   name IN varchar2,
   descr IN varchar2,
   seller IN varchar2,
-  minPrice IN number,
   days IN number,
   cat IN varchar2,
   id OUT number )
@@ -92,7 +91,7 @@ BEGIN
   SELECT c_date INTO currTime FROM ourSysDATE;
   SELECT NVL(max(auction_id), 0) INTO id FROM Product;
   id := id + 1;
-  INSERT INTO Product VALUES(id, name, descr, seller, currTime, minPrice, days, 'not sold', null, null, null);
+  INSERT INTO Product VALUES(id, name, descr, seller, currTime, 0, days, 'not sold', null, null, null);
   INSERT INTO BelongsTo VALUES(id, cat);
 END;
 /
