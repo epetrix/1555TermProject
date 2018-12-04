@@ -239,7 +239,7 @@ public class Customer extends User {
 				query = "INSERT INTO Bidlog VALUES (?, ?, ?, ?, ?)";  
 				PreparedStatement statement = connection.prepareStatement(query); 
 				statement.setInt(1, 5);
-				statement.setInt(2, ); 
+				statement.setInt(2, 0); 
 				statement.setString(3, login); 
 				query = "SELECT c_date FROM ourSysDATE";
 				statement.setDate(4, java.sql.Date.valueOf(query));
