@@ -424,5 +424,36 @@ public class Customer extends User {
 		return ids.get(i);
 	}
 
-	private void suggestion() {}
+	private void suggestion() { 
+		//get every product that the user has bid on
+		query = "SELECT b.auction_id, b.bidder "
+				+"FROM Bidlog b "
+				+"WHERE b.bidder = ?;"
+		
+		try
+		{
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, login);
+			resultSet = statement.executeQuery();
+			Set<Integer> productHistory = new HashSet<Integer>();
+			while(resultSet.hasNext())
+			{
+				int auction_id = resultSet.getInt(1);
+				String bidder = resultSet.GetString(2);
+				productHistory.add(auction_id);
+			}	
+			
+
+			Set<String> biddingFriends = new HashSet<String>();
+			for(Integer k : productHistory)
+			{
+
+			}	
+
+		}
+		catch(Exception Ex)
+		{
+			System.err.println("Error");
+		}
+	}
 }
