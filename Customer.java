@@ -102,38 +102,60 @@ public class Customer extends User {
 			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
 			char sort = Character.toLowerCase(input.nextLine().charAt(0));
 
+			if(sort != 'a' && sort != 'h') return;
+
+			String params = null;
+			String ordering = null;
 			switch (sort) {
 				case 'a':
-					query = "SELECT auction_id, name, description "
-						+ "FROM Product NATURAL JOIN BelongsTo "
-						+ "WHERE LOWER(category) LIKE '" + cat + "%' "
-						+ "ORDER BY name ASC";
-
-							statement = connection.createStatement();
-							resultSet = statement.executeQuery(query);
-
-							System.out.println("Returned result(s):");
-							if(!resultSet.next()) {
-								System.out.println("No items matched the given keywords.");
-								return;
-							}
-
-							int i = 1;
-							do {
-								System.out.print("\n" + i + ") ");
-								System.out.print(resultSet.getInt(1) + ", ");
-								System.out.print("\"" + resultSet.getString(2) + "\", ");
-								System.out.print("\"" + resultSet.getString(3) + "\"");
-								i++;
-							} while(resultSet.next());
-					break;
+				params = "auction_id,name,description";
+				ordering = "name ASC";
+				break;
 
 				case 'h':
-					break;
+				params = "auction_id,name,amount";
+				ordering = "amount DESC";
+				break;
 			}
+			query = "SELECT " + params + " "
+				+ "FROM Product NATURAL JOIN BelongsTo "
+				+ "WHERE LOWER(category) LIKE '" + cat + "%' "
+				+ "ORDER BY " + ordering;
+
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
+
+			System.out.println("Returned result(s):");
+			if(!resultSet.next()) {
+				System.out.println("No items matched the given keywords.");
+				return;
+			}
+
+			int i = 1;
+			do {
+				System.out.print(i + ") ");
+				if(sort == 'a') {
+					printProductByName(resultSet);
+				} else {
+					printProductByAmount(resultSet);
+				}
+				i++;
+			} while(resultSet.next());
 		} catch (Exception ex) {
 			System.err.println("Error: " + ex);
 		}
+	}
+
+	private void printProductByName(ResultSet resultSet) throws SQLException {
+		System.out.print(resultSet.getInt(1) + ", ");
+		System.out.print("\"" + resultSet.getString(2) + "\", ");
+		System.out.println("\"" + resultSet.getString(3) + "\"");
+	}
+
+	private void printProductByAmount(ResultSet resultSet) throws SQLException {
+		System.out.print(resultSet.getInt(1) + ", ");
+		System.out.print("\"" + resultSet.getString(2) + "\", ");
+		System.out.println(resultSet.getInt(3));
 	}
 
 	private void search() {
