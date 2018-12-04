@@ -225,7 +225,34 @@ public class Customer extends User {
 	}
 
 	private void bid() {
+		int id = Prompter.getInt("Auction ID of product you want to bid on: "); 
+		int price = Prompter.getInt("Bid amount: "); 
 
+		query = "SELECT amount "
+		+ "FROM Product "
+		+ "WHERE auction_id LIKE " + id + " "; 
+
+		try {
+			statement = connection.createStatement(); 
+			resultSet = statement.executeQuery(query); 
+			if(resultSet.getInt(1) < price) {
+				query = "INSERT INTO Bidlog VALUES (?, ?, ?, ?, ?)";  
+				PreparedStatement statement = connection.prepareStatement(query); 
+				statement.setInt(1, 5);
+				statement.setInt(2, 0); 
+				statement.setString(3, login); 
+				query = "SELECT c_date FROM ourSysDATE";
+				statement.setDate(4, java.sql.Date.valueOf(query));
+				statement.setInt(5, price);
+				statement.execute();  
+			}
+
+			else 
+				System.out.print("Nope, sorry");  
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace(); 
+		}
 	}
 
 	private void openSellMenu() {
