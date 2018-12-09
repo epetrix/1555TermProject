@@ -225,33 +225,33 @@ public class Customer extends User {
 	}
 
 	private void bid() {
-		int id = Prompter.getInt("Auction ID of product you want to bid on: "); 
-		int price = Prompter.getInt("Bid amount: "); 
+		int id = Prompter.getInt("Auction ID of product you want to bid on: ");
+		int price = Prompter.getInt("Bid amount: ");
 
 		query = "SELECT amount "
 		+ "FROM Product "
-		+ "WHERE auction_id LIKE " + id + " "; 
+		+ "WHERE auction_id LIKE " + id + " ";
 
 		try {
-			statement = connection.createStatement(); 
-			resultSet = statement.executeQuery(query); 
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(query);
 			if(resultSet.getInt(1) < price) {
-				query = "INSERT INTO Bidlog VALUES (?, ?, ?, ?, ?)";  
-				PreparedStatement statement = connection.prepareStatement(query); 
+				query = "INSERT INTO Bidlog VALUES (?, ?, ?, ?, ?)";
+				PreparedStatement statement = connection.prepareStatement(query);
 				statement.setInt(1, 5);
-				statement.setInt(2, 0); 
-				statement.setString(3, login); 
+				statement.setInt(2, 0);
+				statement.setString(3, login);
 				query = "SELECT c_date FROM ourSysDATE";
 				statement.setDate(4, java.sql.Date.valueOf(query));
 				statement.setInt(5, price);
-				statement.execute();  
+				statement.execute();
 			}
 
-			else 
-				System.out.print("Nope, sorry");  
+			else
+				System.out.print("Nope, sorry");
 		}
 		catch (SQLException ex) {
-			ex.printStackTrace(); 
+			ex.printStackTrace();
 		}
 	}
 
@@ -424,36 +424,39 @@ public class Customer extends User {
 		return ids.get(i);
 	}
 
-	private void suggestion() { 
+	private void suggestion() {
 		//get every product that the user has bid on
-		query = "SELECT b.auction_id, b.bidder "
-				+"FROM Bidlog b "
-				+"WHERE b.bidder = ?;"
-		
+		query = "SELECT auction_id,count(*) as total,name FROM ("
+			+ "SELECT distinct B1.auction_id,B1.bidder as bidder1 "
+			+ "FROM Bidlog B1 "
+			+ "WHERE B1.bidder=?) "
+			+ "NATURAL JOIN ("
+			+ "SELECT distinct B2.auction_id,B2.bidder as bidder2 "
+			+ "FROM Bidlog B2) R2 "
+			+ "NATURAL JOIN Product "
+			+ "WHERE bidder1 != bidder2 "
+			+ "GROUP BY auction_id,name "
+			+ "ORDER BY total DESC";
+
 		try
 		{
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setString(1, login);
 			resultSet = statement.executeQuery();
-			Set<Integer> productHistory = new HashSet<Integer>();
-			while(resultSet.hasNext())
-			{
-				int auction_id = resultSet.getInt(1);
-				String bidder = resultSet.GetString(2);
-				productHistory.add(auction_id);
-			}	
-			
 
-			Set<String> biddingFriends = new HashSet<String>();
-			for(Integer k : productHistory)
-			{
+			if(!resultSet.next()) {
+				System.out.println("No freinds, sad!");
+				return;
+			}
 
-			}	
-
-		}
-		catch(Exception Ex)
-		{
-			System.err.println("Error");
+			System.out.println("Result(s):");
+			int i = 1;
+			do {
+				System.out.println(i + ") " + resultSet.getString("name"));
+				i++;
+			} while(resultSet.next());
+		} catch(SQLException ex) {
+			System.err.println(ex);
 		}
 	}
 }
