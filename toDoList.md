@@ -17,7 +17,7 @@ Revisit in **PHASE 3**
 ## PHASE 3
 
 - [ ] Check leaf category using SQL Methods (1.c)
-- [ ] Check bid amount using SWL methods to enforce consistency (1.d)
+- [ ] Check bid amount using SQL methods to enforce consistency (1.d)
 - [ ] Update sell_date when selling the product (1.e)
 - [ ] Prevent SQL injection wherever user inputs are used 
 - [ ] Find second highest bid uusing SQL methods (1.e)
