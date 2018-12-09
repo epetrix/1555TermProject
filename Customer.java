@@ -81,11 +81,11 @@ public class Customer extends User {
 			}
 
 			System.out.print("\nSelect a category: ");
-			String cat = input.nextLine().toLowerCase();
+			String cat = input.nextLine().trim().toLowerCase();
 
 			query = "SELECT name "
 			+ "FROM Category "
-			+ "WHERE LOWER(parent_category) LIKE '" + cat + "%'";
+			+ "WHERE LOWER(parent_category) LIKE '" + cat + "'";
 
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
@@ -97,12 +97,10 @@ public class Customer extends User {
 			}
 
 			System.out.print("\nSelect a subcategory: ");
-			cat = input.nextLine().toLowerCase();
+			cat = input.nextLine().trim().toLowerCase();
 
 			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
-			char sort = Character.toLowerCase(input.nextLine().charAt(0));
-
-			if(sort != 'a' && sort != 'h') return;
+			char sort = Character.toLowerCase(input.nextLine().trim().charAt(0));
 
 			String params = null;
 			String ordering = null;
@@ -116,10 +114,12 @@ public class Customer extends User {
 				params = "auction_id,name,amount";
 				ordering = "amount DESC";
 				break;
+
+				default: return;
 			}
 			query = "SELECT " + params + " "
 				+ "FROM Product NATURAL JOIN BelongsTo "
-				+ "WHERE LOWER(category) LIKE '" + cat + "%' "
+				+ "WHERE LOWER(category) LIKE '" + cat + "' "
 				+ "ORDER BY " + ordering;
 
 			statement = connection.createStatement();
@@ -159,8 +159,7 @@ public class Customer extends User {
 	}
 
 	private void search() {
-		System.out.println("Search up to two keywords: ");
-		String[] keywords = input.nextLine().toLowerCase().split("\\s+", 3);
+		String[] keywords = Prompter.getStrings("Search up to two keywords: ", 2);
 		System.out.println();
 
 		query = "SELECT auction_id, name, description "
@@ -195,33 +194,48 @@ public class Customer extends User {
 
 	private void auction() {
 		System.out.print("Enter name of product: ");
-        String name = input.nextLine();
+    String name = input.nextLine();
 
-        System.out.print("Enter (optional) description: ");
-        String description = input.nextLine();
+    System.out.print("Enter (optional) description: ");
+    String description = input.nextLine();
+    try {
+			String[] cats = getCategories();
+			String qmarks = "?";
+			for(int i = 1; i < cats.length; i++) {
+				qmarks += ",?";
+			}
+			int days = Prompter.getInt("Enter number of days for auction: ");
 
-        System.out.print("Enter Categories: ");
-        String[] categories = input.nextLine().split("\\s+");
+	    query = String.format("DECLARE "
+	    	+ "id number; "
+	    	+ "BEGIN "
+	    	+ "proc_putProduct(?,?,?,?,categories_t(%s),id); "
+	    	+ "END;", qmarks);
 
-        int days = Prompter.getInt("Enter number of days for auction: ");
+    	PreparedStatement statement = connection.prepareStatement(query);
+    	statement.setString(1, name);
+    	statement.setString(2, description);
+    	statement.setString(3, login);
+    	statement.setInt(4, days);
+			for(int i = 0; i < cats.length; i++) {
+				statement.setString(5 + i, cats[i]);
+			}
+    	statement.execute();
+    } catch (SQLException ex) {
+    	ex.printStackTrace();
+    }
+	}
 
-        query = "DECLARE "
-        	+ "id NUMBER; "
-        	+ "BEGIN "
-        	+ "proc_putProduct(?,?,?,?,?,id); "
-        	+ "END;";
+	private String[] getCategories() throws SQLException {
+		int len = Prompter.getInt("Enter number of categories: ", 1, 128);
+		String[] cats = new String[len];
 
-        try {
-        	PreparedStatement statement = connection.prepareStatement(query);
-        	statement.setString(1, name);
-        	statement.setString(2, description);
-        	statement.setString(3, login);
-        	statement.setInt(4, days);
-        	statement.setString(5, categories[0]);
-        	statement.execute();
-        } catch (SQLException ex) {
-        	ex.printStackTrace();
-        }
+		for(int i = 0; i < len; i++) {
+			System.out.print("Enter category #" + (i + 1) + ": ");
+			cats[i] = input.nextLine().trim();
+		}
+
+		return cats;
 	}
 
 	private void bid() {

@@ -45,8 +45,6 @@ public class MyAuction
 				success = true;
 			} catch(SQLException ex) {
 				System.out.print("Wrong username or password. Try again!");
-				System.out.println(ex);
-				System.exit(1);
 			}
 		} while(!success);
 		System.out.println();

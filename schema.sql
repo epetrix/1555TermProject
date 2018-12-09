@@ -8,6 +8,9 @@ DROP TABLE BelongsTo CASCADE CONSTRAINTS;
 
 commit;
 
+CREATE OR REPLACE TYPE categories_t AS VARRAY(128) OF varchar2(20);
+/
+
 CREATE TABLE ourSysDATE
 (
     c_date date,

@@ -15,14 +15,14 @@ public class Prompter {
 	}
 
   public static boolean getBoolean() {
-    return input.nextLine().toLowerCase().equals("y");
+    return input.nextLine().trim().equalsIgnoreCase("y");
   }
 
   public static int getInt(String prompt) {
     int answer;
     while(true) {
       System.out.print(prompt);
-      String line = input.nextLine();
+      String line = input.nextLine().trim();
 
       try {
         answer = Integer.parseInt(line);
@@ -51,7 +51,7 @@ public class Prompter {
 
     while(true) {
       System.out.print("Choice: ");
-      String line = input.nextLine();
+      String line = input.nextLine().trim();
 
       if(line.length() == 1) {
         answer = Character.toLowerCase(line.charAt(0));
@@ -61,5 +61,16 @@ public class Prompter {
       System.out.println("Answer must fall between '" + start + "' and '" + end + "'");
     }
     return answer;
+  }
+
+  public static String[] getStrings(String prompt, int max) {
+    String[] strings;
+    while(true) {
+      System.out.print(prompt);
+      strings = input.nextLine().trim().split("\\s+", max + 1);
+      if(strings.length <= max) break;
+      System.out.println("Too many entries, enter " + max + " or less!");
+    }
+    return strings;
   }
 }

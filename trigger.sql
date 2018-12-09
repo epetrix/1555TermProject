@@ -1,8 +1,8 @@
 -- functions
 
-CREATE OR REPLACE FUNCTION func_productCount(c IN VARCHAR2, x IN NUMBER)
-  RETURN NUMBER IS
-  total NUMBER;
+CREATE OR REPLACE FUNCTION func_productCount(c IN varchar2, x IN number)
+  RETURN number IS
+  total number;
 
   BEGIN
     SELECT count(*) INTO total
@@ -15,9 +15,9 @@ CREATE OR REPLACE FUNCTION func_productCount(c IN VARCHAR2, x IN NUMBER)
   END;
 /
 
-CREATE OR REPLACE FUNCTION func_bidCount(u IN VARCHAR2, x IN NUMBER)
-  RETURN NUMBER IS
-  total NUMBER;
+CREATE OR REPLACE FUNCTION func_bidCount(u IN varchar2, x IN number)
+  RETURN number IS
+  total number;
 
   BEGIN
     SELECT count(*) INTO total
@@ -30,9 +30,9 @@ CREATE OR REPLACE FUNCTION func_bidCount(u IN VARCHAR2, x IN NUMBER)
   END;
 /
 
-CREATE OR REPLACE FUNCTION func_buyingAmount(u IN VARCHAR2, x IN NUMBER)
-  RETURN NUMBER IS
-  total NUMBER;
+CREATE OR REPLACE FUNCTION func_buyingAmount(u IN varchar2, x IN number)
+  RETURN number IS
+  total number;
 
   BEGIN
     SELECT NVL(sum(P.amount), 0) INTO total
@@ -83,7 +83,7 @@ CREATE OR REPLACE PROCEDURE proc_putProduct(
   descr IN varchar2,
   seller IN varchar2,
   days IN number,
-  cat IN varchar2,
+  cats IN categories_t,
   id OUT number )
 IS
   currTime date;
@@ -92,7 +92,9 @@ BEGIN
   SELECT NVL(max(auction_id), 0) INTO id FROM Product;
   id := id + 1;
   INSERT INTO Product VALUES(id, name, descr, seller, currTime, 0, days, 'not sold', null, null, null);
-  INSERT INTO BelongsTo VALUES(id, cat);
+  FOR i in 1..cats.count LOOP
+    INSERT INTO BelongsTo VALUES(id, cats(i));
+  END LOOP;
 END;
 /
 
