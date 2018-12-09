@@ -72,7 +72,8 @@ FOR EACH ROW
 BEGIN
     UPDATE Product
     SET status = 'closed'
-    WHERE :NEW.c_date - start_date >= number_of_days;
+    WHERE :NEW.c_date - start_date >= number_of_days
+      AND status = 'under auction';
 END;
 /
 
