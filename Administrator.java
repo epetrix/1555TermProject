@@ -245,7 +245,7 @@ public final class Administrator extends User {
     } while(answer != quit);
   }
 
-  private void getBestLeafCategories(int months, int total) {
+  public void getBestLeafCategories(int months, int total) {
     String whereClause = "WHERE NOT EXISTS ("
       + "SELECT 1 FROM Category C2 "
       + "WHERE C1.name = C2.parent_category"
@@ -254,7 +254,7 @@ public final class Administrator extends User {
     getBestCategories(whereClause, months, total);
   }
 
-  private void getBestRootCategories(int months, int total) {
+  public void getBestRootCategories(int months, int total) {
     String whereClause = "WHERE parent_category IS NULL";
     System.out.println("Getting top " + total + " highest volume root categories...");
     getBestCategories(whereClause, months, total);
@@ -295,11 +295,11 @@ public final class Administrator extends User {
     }
   }
 
-  private void getActiveBidders(int months, int total) {
+  public void getActiveBidders(int months, int total) {
     getAciveCustomers("Bidder", "Bids", "func_bidCount", months, total);
   }
 
-  private void getActiveBuyers(int months, int total) {
+  public void getActiveBuyers(int months, int total) {
     getAciveCustomers("Buyer", "Amount", "func_buyingAmount", months, total);
   }
 
