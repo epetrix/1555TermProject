@@ -3,7 +3,7 @@ import java.util.Map;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-public class Administrator extends User {
+public final class Administrator extends User {
   public Administrator(Connection connection, String login) {
     super(connection, login);
   }
@@ -91,7 +91,7 @@ public class Administrator extends User {
     }
   }
 
-  private boolean addUser(
+  public boolean addUser(
     String login,
     String password,
     String name,
@@ -138,7 +138,7 @@ public class Administrator extends User {
     }
   }
 
-  private boolean setDate(String dateStr, String format) {
+  public boolean setDate(String dateStr, String format) {
     SimpleDateFormat df = new SimpleDateFormat(format);
     try {
       java.util.Date date = df.parse(dateStr);
@@ -162,12 +162,18 @@ public class Administrator extends User {
     System.out.print("Get products from specific customer? (Y/n): ");
     boolean isAll = !Prompter.getBoolean();
 
-    String query = "SELECT name,status,amount,buyer FROM Product";
+    String login = null;
     if(!isAll) {
       System.out.print("login: ");
-      String login = input.nextLine();
-      query += " WHERE seller = '" + login + "'";
+      login = input.nextLine();
     }
+
+    getProductStats(isAll, login)
+  }
+
+  public void getProductStats(boolean isAll, String login) {
+    String query = "SELECT name,status,amount,buyer FROM Product";
+    if(!isAll) query += " WHERE seller = '" + login + "'";
     query += " ORDER BY "
       + "CASE WHEN status='sold' "
       + "THEN 0 ELSE 1 "
