@@ -99,7 +99,7 @@ public final class Customer extends User {
 		}
 
 		System.out.print("\nSelect a subcategory: ");
-		cat = input.nextLine().trim().toLowerCase();
+		String cat = input.nextLine().trim().toLowerCase();
 
 		System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
 		char sort = Character.toLowerCase(input.nextLine().trim().charAt(0));
@@ -270,29 +270,50 @@ public final class Customer extends User {
 	public void bid(int id, int price) {
 		query = "SELECT amount "
 		+ "FROM Product "
-		+ "WHERE auction_id LIKE " + id + " ";
+		+ "WHERE auction_id=?";
 
 		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(query);
-			if(resultSet.getInt(1) < price) {
-				query = "INSERT INTO Bidlog VALUES (?, ?, ?, ?, ?)";
-				PreparedStatement statement = connection.prepareStatement(query);
-				statement.setInt(1, 5);
-				statement.setInt(2, 0);
-				statement.setString(3, login);
-				query = "SELECT c_date FROM ourSysDATE";
-				statement.setDate(4, java.sql.Date.valueOf(query));
-				statement.setInt(5, price);
-				statement.execute();
+			PreparedStatement statement = connection.prepareStatement(query);
+			statement.setInt(1, id);
+			resultSet = statement.executeQuery();
+			if(!resultSet.next() || resultSet.getInt(1) < price) {
+				System.out.println("Nope, sorry");
+				return;
 			}
 
-			else
-				System.out.print("Nope, sorry");
+			query = "INSERT INTO Bidlog VALUES (?,?,?,?,?)";
+			statement = connection.prepareStatement(query);
+			statement.setInt(1, getNextBidId());
+			statement.setInt(2, id);
+			statement.setString(3, login);
+			statement.setDate(4, getSysDate());
+			statement.setInt(5, price);
+			statement.execute();
 		}
 		catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private int getNextBidId() {
+		String query = "SELECT NVL(max(bidsn),0)+1 as id FROM Bidlog";
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(query);
+			resultSet.next();
+			return resultSet.getInt(1);
+		} catch(SQLException ex) {
+			System.err.println("Could not get bidsn");
+			return 0;
+		}
+	}
+
+	private java.sql.Date getSysDate() throws SQLException {
+		query = "SELECT c_date FROM ourSysDATE";
+		statement = connection.createStatement();
+		resultSet = statement.executeQuery(query);
+		resultSet.next();
+		return resultSet.getDate(1);
 	}
 
 	private void openSellMenu() {

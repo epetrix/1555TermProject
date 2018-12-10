@@ -23,8 +23,13 @@ SQL> exit
 ```
 Finally, you `make` the project and run it like so.
 ```
-$ make
+$ make MyAuction
 $ java MyAuction
+```
+To run the Driver program, do the following:
+```
+$ make Driver
+java Driver
 ```
 The program will prompt you to log in to the database with your `sqlplus` user
 credentials. The default administrator account for the auction site is `admin`

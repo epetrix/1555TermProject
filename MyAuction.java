@@ -18,7 +18,7 @@ public class MyAuction
 	public static void main(String[] args)
 	{
 		scanner = new Scanner(System.in);
-		connection = serverLogin();
+		connection = serverLogin(scanner);
 		boolean done;
 		do {
 			auctionLogin(connection).openMenu();
@@ -29,7 +29,7 @@ public class MyAuction
 		System.out.println("Goodbye!");
 	}
 
-	public static Connection serverLogin() {
+	public static Connection serverLogin(Scanner scanner) {
 		System.out.println("Please enter your user credentials for sqlplus.");
 
 		Connection connection;
@@ -56,8 +56,8 @@ public class MyAuction
 		System.out.print("Hello welcome to our Electronic Auctioning System! ");
 		System.out.println("Please log in.");
 
-		Map<String,String> adminMap = getAdminMap();
-		Map<String,String> customerMap = getCustomerMap();
+		Map<String,String> adminMap = getAdminMap(connection);
+		Map<String,String> customerMap = getCustomerMap(connection);
 		while(true) {
 			System.out.print("username: ");
 			String username = scanner.nextLine();
@@ -77,17 +77,17 @@ public class MyAuction
 		}
 	}
 
-	public static Map<String,String> getAdminMap()
+	public static Map<String,String> getAdminMap(Connection connection)
 	{
-		return getUserMap("Administrator");
+		return getUserMap(connection, "Administrator");
 	}
 
-	public static Map<String,String> getCustomerMap()
+	public static Map<String,String> getCustomerMap(Connection connection)
 	{
-		return getUserMap("Customer");
+		return getUserMap(connection, "Customer");
 	}
 
-	private static Map<String,String> getUserMap(String table)
+	private static Map<String,String> getUserMap(Connection connection, String table)
 	{
 		Map<String,String> userSet = new HashMap<String,String>();
 

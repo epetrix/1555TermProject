@@ -1,14 +1,14 @@
 # Simple Makefile for the project
 
-PROJ = MyAuction
+default: MyAuction
 
-default: all
-all: $(PROJ)
+MyAuction: *.java
+	javac MyAuction.java
 
-$(PROJ): *.java
-	javac $(PROJ).java
+Driver: *.java
+	javac Driver.java
 
 clean:
 	$(RM) *.class
 
-.PHONY: default all $(PROJ) clean
+.PHONY: default all MyAuction Driver clean

@@ -1,5 +1,5 @@
 public class CustomerTest {
-  public static test(Customer user) {
+  public static void test(Customer user) {
     testBrowse(user);
     testSearch(user);
     testAuction(user);
@@ -14,37 +14,43 @@ public class CustomerTest {
   }
 
   private static void testBrowse(Customer user) {
-    log("Testing product browser...");
+    log(user, "Testing product browser...");
     user.browseProd("Phones", 'a');
+    System.out.println();
   }
 
   private static void testSearch(Customer user) {
-    log("Testing product search...");
-    user.search({"brand", "new"});
+    log(user, "Testing product search...");
+    user.search(new String[] {"brand", "new"});
+    System.out.println();
   }
 
   private static void testAuction(Customer user) {
-    log("Testing auctioning product...");
+    log(user, "Testing auctioning product...");
     String login = user.login;
     String name = "Avocado";
     String desc = "It tastes good!";
-    String[] cats = {"Phones", "Cooking Supplies"};
+    String[] cats = new String[] {"Phones", "Cooking Supplies"};
     int days = 20;
     user.auction(login, name, desc, cats, days);
+    System.out.println();
   }
 
   private static void testBid(Customer user) {
-    log("Testing bid on products...");
+    log(user, "Testing bid on products...");
     user.bid(1, 50);
+    System.out.println();
   }
 
   private static void testSell(Customer user) {
-    log("Testing selling product...");
+    log(user, "Testing selling product...");
     user.sellProduct(1, "abc456", 30);
+    System.out.println();
   }
 
   private static void testSuggestion(Customer user) {
-    log("Testing suggestions...");
+    log(user, "Testing suggestions...");
     user.suggestion();
+    System.out.println();
   }
 }
