@@ -47,6 +47,11 @@ public class AdministratorTest {
     testActiveBuyers(admin);
   }
 
+  private static void testHighLeaves(Administrator admin, int i, int j) {
+    log(admin, "Testing high volume leaf categories..."); 
+    admit.getBestLeafCategories(i, j); 
+  }
+
   private static void testHighLeaves(Administrator admin) {
     log(admin, "Testing high volume leaf categories...");
     admin.getBestLeafCategories(5, 10);
