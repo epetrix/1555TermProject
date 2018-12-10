@@ -94,33 +94,41 @@ public final class Customer extends User {
 				String name = resultSet.getString("name");
 				System.out.println(name);
 			}
+		} catch (Exception ex) {
+			System.err.println("Error: " + ex);
+		}
 
-			System.out.print("\nSelect a subcategory: ");
-			cat = input.nextLine().trim().toLowerCase();
+		System.out.print("\nSelect a subcategory: ");
+		cat = input.nextLine().trim().toLowerCase();
 
-			System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
-			char sort = Character.toLowerCase(input.nextLine().trim().charAt(0));
+		System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
+		char sort = Character.toLowerCase(input.nextLine().trim().charAt(0));
 
-			String params = null;
-			String ordering = null;
-			switch (sort) {
-				case 'a':
-				params = "auction_id,name,description";
-				ordering = "name ASC";
-				break;
+		browseProd(cat, sort);
+	}
 
-				case 'h':
-				params = "auction_id,name,amount";
-				ordering = "amount DESC";
-				break;
+	public void browseProd(String cat, char sort) {
+		String params = null;
+		String ordering = null;
+		switch (sort) {
+			case 'a':
+			params = "auction_id,name,description";
+			ordering = "name ASC";
+			break;
 
-				default: return;
-			}
-			query = "SELECT " + params + " "
-				+ "FROM Product NATURAL JOIN BelongsTo "
-				+ "WHERE LOWER(category) LIKE '" + cat + "' "
-				+ "ORDER BY " + ordering;
+			case 'h':
+			params = "auction_id,name,amount";
+			ordering = "amount DESC";
+			break;
 
+			default: return;
+		}
+		query = "SELECT " + params + " "
+			+ "FROM Product NATURAL JOIN BelongsTo "
+			+ "WHERE LOWER(category) LIKE '" + cat + "' "
+			+ "ORDER BY " + ordering;
+
+		try {
 			statement = connection.createStatement();
 			resultSet = statement.executeQuery(query);
 
@@ -160,7 +168,10 @@ public final class Customer extends User {
 	private void search() {
 		String[] keywords = Prompter.getStrings("Search up to two keywords: ", 2);
 		System.out.println();
+		search(keywords);
+	}
 
+	public void search(String[] keywords) {
 		query = "SELECT auction_id, name, description "
 			+ "FROM Product "
 			+ "WHERE LOWER(description) LIKE '%" + keywords[0] + "%'";
@@ -199,21 +210,34 @@ public final class Customer extends User {
     String description = input.nextLine();
     try {
 			String[] cats = getCategories();
-			String qmarks = "?";
-			for(int i = 1; i < cats.length; i++) {
-				qmarks += ",?";
-			}
 			int days = Prompter.getInt("Enter number of days for auction: ");
+			auction(login, name, description, cats, days);
+		} catch (SQLException ex) {
+    	ex.printStackTrace();
+    }
+	}
 
-	    query = String.format("DECLARE "
-	    	+ "id number; "
-	    	+ "BEGIN "
-	    	+ "proc_putProduct(?,?,?,?,categories_t(%s),id); "
-	    	+ "END;", qmarks);
+	public void auction(
+		String login,
+		String name,
+		String desc,
+		String[] cats,
+		int days
+	) {
+		String qmarks = "?";
+		for(int i = 1; i < cats.length; i++) {
+			qmarks += ",?";
+		}
 
+    query = String.format("DECLARE "
+    	+ "id number; "
+    	+ "BEGIN "
+    	+ "proc_putProduct(?,?,?,?,categories_t(%s),id); "
+    	+ "END;", qmarks);
+		try {
     	PreparedStatement statement = connection.prepareStatement(query);
     	statement.setString(1, name);
-    	statement.setString(2, description);
+    	statement.setString(2, desc);
     	statement.setString(3, login);
     	statement.setInt(4, days);
 			for(int i = 0; i < cats.length; i++) {
@@ -240,7 +264,10 @@ public final class Customer extends User {
 	private void bid() {
 		int id = Prompter.getInt("Auction ID of product you want to bid on: ");
 		int price = Prompter.getInt("Bid amount: ");
+		bid(id, price);
+	}
 
+	public void bid(int id, int price) {
 		query = "SELECT amount "
 		+ "FROM Product "
 		+ "WHERE auction_id LIKE " + id + " ";
@@ -329,7 +356,7 @@ public final class Customer extends User {
 		}
 	}
 
-	private void sellProduct(int auction_id, String buyer, int amount) {
+	public void sellProduct(int auction_id, String buyer, int amount) {
 		String query = "UPDATE Product "
 			+ "SET status='sold',buyer=?,amount=?"
 			+ "WHERE auction_id=?";
@@ -437,7 +464,7 @@ public final class Customer extends User {
 		return ids.get(i);
 	}
 
-	private void suggestion() {
+	public void suggestion() {
 		//get every product that the user has bid on
 		query = "SELECT auction_id,count(*) as total,name FROM ("
 			+ "SELECT distinct B1.auction_id,B1.bidder as bidder1 "
