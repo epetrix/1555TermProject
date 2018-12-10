@@ -33,8 +33,7 @@ public class MyAuction
 		System.out.println("Please enter your user credentials for sqlplus.");
 
 		Connection connection;
-		boolean success = false;
-		do {
+		while(true) {
 			System.out.print("username: ");
 			String username = scanner.nextLine();
 
@@ -45,14 +44,12 @@ public class MyAuction
 				DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 				String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
 				connection = DriverManager.getConnection(url, username, password);
-				success = true;
+				System.out.println();
+				return connection;
 			} catch(SQLException ex) {
 				System.out.print("Wrong username or password. Try again!");
 			}
-		} while(!success);
-
-		System.out.println();
-		return connection;
+		}
 	}
 
 	public static User auctionLogin(Connection connection) {
