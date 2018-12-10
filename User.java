@@ -12,6 +12,10 @@ public abstract class User {
     this.input = new Scanner(System.in);
   }
 
+  public boolean isAdmin() {
+    return this instanceof Administrator;
+  }
+
 	public ResultSet getRowFromTable(
     String table,
     String pkName,
