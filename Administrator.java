@@ -101,8 +101,8 @@ public final class Administrator extends User {
   ) {
     String table = admin ? "Administrator" : "Customer";
     String query = "INSERT INTO " + table + " VALUES(?,?,?,?,?)";
-    Map<String,String> adminMap = MyAuction.getAdminMap();
-    Map<String,String> customerMap = MyAuction.getCustomerMap();
+    Map<String,String> adminMap = MyAuction.getAdminMap(connection);
+    Map<String,String> customerMap = MyAuction.getCustomerMap(connection);
 
     if(adminMap.containsKey(login) || customerMap.containsKey(login)) {
       return false;
