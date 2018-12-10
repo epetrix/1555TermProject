@@ -21,8 +21,7 @@ public class MyAuction
 		connection = serverLogin();
 		boolean done;
 		do {
-			User user = auctionLogin(connection);
-			user.openMenu();
+			auctionLogin(connection).openMenu();
 			System.out.println("Logging out...");
 			System.out.print("Log in again? (Y/n): ");
 			done = !Prompter.getBoolean();

@@ -2,8 +2,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Customer extends User {
-
+public final class Customer extends User {
 	private Statement statement;
 	private ResultSet resultSet;
 	private String query;
