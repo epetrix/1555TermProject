@@ -23,13 +23,21 @@ public class AdministratorTest {
   }
 
   private static void testSysDate(Administrator admin) {
+    testSysDate(admin, "2019-01-01 00:00:00");
+  }
+
+  private static void testSysDate(Administrator admin, String date) {
     log("Testing update system date...");
-    admin.setDate("2019-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+    admin.setDate(date, "yyyy-MM-dd HH:mm:ss");
   }
 
   private static void testProductStats(Administrator admin) {
+    testProductStats(admin, false, null);
+  }
+
+  private static void testProductStats(Administrator admin, boolean isAll, String login) {
     log("Testing product statistics...");
-    admin.getProductStats(false, null);
+    admin.getProductStats(isAll, login);
   }
 
   private static void testOtherStats(Administrator admin) {
