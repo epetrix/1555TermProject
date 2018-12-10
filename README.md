@@ -14,13 +14,12 @@ this command.
 $ source ~panos/1555/bash.env.class3
 ```
 Next, from the project root directory, you will need to create the databases,
-triggers, etc.  Log into `sqlplus` and run these commands, then `exit`.
+triggers, etc.  Run this command to log into `sqlplus` and set up the database.
 ```
-SQL> @schema
-SQL> @insert
-SQL> @trigger
-SQL> exit
+$ sqlplus username @reset
 ```
+- `username`: your `sqlplus` username
+
 Finally, you `make` the project and run it like so.
 ```
 $ make MyAuction
@@ -29,7 +28,7 @@ $ java MyAuction
 To run the Driver program, do the following:
 ```
 $ make Driver
-java Driver
+$ java Driver
 ```
 The program will prompt you to log in to the database with your `sqlplus` user
 credentials. The default administrator account for the auction site is `admin`

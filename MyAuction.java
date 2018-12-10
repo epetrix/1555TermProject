@@ -102,7 +102,7 @@ public class MyAuction
 				userSet.put(username, password);
 			}
 		} catch(SQLException ex) {
-			System.err.print("Error fetching users. Machine Error: ");
+			System.err.print("Fetching users failed! Machine Error: ");
 			System.err.println(ex);
 			System.exit(1);
 		}

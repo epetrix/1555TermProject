@@ -92,7 +92,7 @@ BEGIN
   SELECT c_date INTO currTime FROM ourSysDATE;
   SELECT NVL(max(auction_id), 0) INTO id FROM Product;
   id := id + 1;
-  INSERT INTO Product VALUES(id, name, descr, seller, currTime, 0, days, 'not sold', null, null, null);
+  INSERT INTO Product VALUES(id, name, descr, seller, currTime, 0, days, 'under auction', null, null, null);
   FOR i in 1..cats.count LOOP
     INSERT INTO BelongsTo VALUES(id, cats(i));
   END LOOP;

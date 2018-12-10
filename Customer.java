@@ -95,14 +95,14 @@ public final class Customer extends User {
 				System.out.println(name);
 			}
 		} catch (Exception ex) {
-			System.err.println("Error: " + ex);
+			System.out.println("Getting categories failed!");
 		}
 
 		System.out.print("\nSelect a subcategory: ");
-		String cat = input.nextLine().trim().toLowerCase();
+		String cat = input.nextLine();
 
 		System.out.println("\nSort products (a)lphabetically or by (h)ighest bid amount? (Enter to ignore): ");
-		char sort = Character.toLowerCase(input.nextLine().trim().charAt(0));
+		char sort = input.nextLine().trim().charAt(0);
 
 		browseProd(cat, sort);
 	}
@@ -110,7 +110,7 @@ public final class Customer extends User {
 	public void browseProd(String cat, char sort) {
 		String params = null;
 		String ordering = null;
-		switch (sort) {
+		switch (Character.toLowerCase(sort)) {
 			case 'a':
 			params = "auction_id,name,description";
 			ordering = "name ASC";
@@ -125,7 +125,7 @@ public final class Customer extends User {
 		}
 		query = "SELECT " + params + " "
 			+ "FROM Product NATURAL JOIN BelongsTo "
-			+ "WHERE LOWER(category) LIKE '" + cat + "' "
+			+ "WHERE LOWER(category) LIKE '" + cat.trim().toLowerCase() + "' "
 			+ "ORDER BY " + ordering;
 
 		try {
@@ -149,7 +149,7 @@ public final class Customer extends User {
 				i++;
 			} while(resultSet.next());
 		} catch (Exception ex) {
-			System.err.println("Error: " + ex);
+			System.out.println("Getting products failed!");
 		}
 	}
 
@@ -198,7 +198,7 @@ public final class Customer extends User {
 				i++;
 			} while(resultSet.next());
 		} catch(SQLException ex) {
-			System.err.println("Error retrieving entries from database: " + ex);
+			System.out.println("Getting entries from database failed!");
 		}
 	}
 
@@ -276,8 +276,8 @@ public final class Customer extends User {
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, id);
 			resultSet = statement.executeQuery();
-			if(!resultSet.next() || resultSet.getInt(1) < price) {
-				System.out.println("Nope, sorry");
+			if(!resultSet.next() || price <= resultSet.getInt(1)) {
+				System.out.println("Bid too low!");
 				return;
 			}
 
@@ -303,7 +303,6 @@ public final class Customer extends User {
 			resultSet.next();
 			return resultSet.getInt(1);
 		} catch(SQLException ex) {
-			System.err.println("Could not get bidsn");
 			return 0;
 		}
 	}
@@ -380,7 +379,7 @@ public final class Customer extends User {
 	public void sellProduct(int auction_id, String buyer, int amount) {
 		String query = "UPDATE Product "
 			+ "SET status='sold',buyer=?,amount=?"
-			+ "WHERE auction_id=?";
+			+ "WHERE auction_id=? AND status='under auction'";
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setString(1, buyer);
@@ -393,7 +392,7 @@ public final class Customer extends User {
 	}
 
 	private void removeProduct(int auction_id) {
-		String query = "DELETE FROM Product WHERE auction_id=?";
+		String query = "UPDATE Product WHERE auction_id=? SET status='withdrawn'";
 		try {
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setInt(1, auction_id);
@@ -476,7 +475,7 @@ public final class Customer extends User {
 			} while(resultSet.next());
 			System.out.println("0) Cancel");
 		} catch(SQLException ex) {
-			System.err.println("Error retrieving products from database: " + ex);
+			System.out.println("Retrieving products from database failed!");
 			return -1;
 		}
 
@@ -517,7 +516,7 @@ public final class Customer extends User {
 				i++;
 			} while(resultSet.next());
 		} catch(SQLException ex) {
-			System.err.println(ex);
+			System.out.println("Getting suggestions failed!");
 		}
 	}
 }

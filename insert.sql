@@ -6,11 +6,11 @@ INSERT INTO Customer VALUES('abc456', 'dogs', 'Alice', '200 Cathy Blvd', 'alice@
 
 INSERT INTO Administrator VALUES('admin', 'root', 'Bob', '123 Sennott St', 'bob@pitt.edu');
 
-INSERT INTO Product VALUES(1, 'toaster', 'toasts bread', 'adk67', SYSDATE, 20, 10, 'sold', 'abc456', SYSDATE + INTERVAL '10' DAY, null);
-INSERT INTO Product VALUES(2, 'Macbook Pro 2018', 'brand new Apple computer', 'abc456', SYSDATE, 1500, 30, 'not sold', null, SYSDATE + INTERVAL '5', null);
-INSERT INTO Product VALUES(3, 'Bose QC30 Headphones', 'sound cancelling headphones', 'adk67', SYSDATE, 300, 15, 'not sold', null, SYSDATE + INTERVAL '10', null);
-INSERT INTO Product VALUES(4, 'IPhone XR', 'brand new IPhone', 'xyz123', SYSDATE, 300, 15, 'sold', 'abc456', SYSDATE + INTERVAL '3', null);
-INSERT INTO Product VALUES(5, 'Hydro Flask', 'new water bottle', 'xyz123', SYSDATE, 30, 4, 'not sold', 'adk67', SYSDATE + INTERVAL '6', null);
+INSERT INTO Product VALUES(1, 'toaster', 'toasts bread', 'adk67', SYSDATE, 20, 10, 'sold', 'abc456', SYSDATE + 10, 30);
+INSERT INTO Product VALUES(2, 'Macbook Pro 2018', 'brand new Apple computer', 'abc456', SYSDATE, 1500, 30, 'under auction', null, SYSDATE + 5, null);
+INSERT INTO Product VALUES(3, 'Bose QC30 Headphones', 'sound cancelling headphones', 'adk67', SYSDATE, 300, 15, 'under auction', null, SYSDATE + 10, null);
+INSERT INTO Product VALUES(4, 'IPhone XR', 'brand new IPhone', 'xyz123', SYSDATE, 300, 15, 'sold', 'abc456', SYSDATE + 3, 1000);
+INSERT INTO Product VALUES(5, 'Hydro Flask', 'new water bottle', 'xyz123', SYSDATE, 30, 4, 'under auction', 'adk67', SYSDATE + 6, null);
 
 INSERT INTO Bidlog VALUES(1, 1, 'abc456', SYSDATE, 20);
 INSERT INTO Bidlog VALUES(2, 1, 'xyz123', SYSDATE, 25);

@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class CustomerTest {
   public static void test(Customer user) {
     testBrowse(user);
@@ -27,8 +29,9 @@ public class CustomerTest {
 
   private static void testAuction(Customer user) {
     log(user, "Testing auctioning product...");
+    String avoId = Long.toHexString(new Random().nextLong() & 0xffffffffffffL);
     String login = user.login;
-    String name = "Avocado";
+    String name = "Avocado#" + avoId;
     String desc = "It tastes good!";
     String[] cats = new String[] {"Phones", "Cooking Supplies"};
     int days = 20;
@@ -38,13 +41,13 @@ public class CustomerTest {
 
   private static void testBid(Customer user) {
     log(user, "Testing bid on products...");
-    user.bid(1, 50);
+    user.bid(2, 50);
     System.out.println();
   }
 
   private static void testSell(Customer user) {
     log(user, "Testing selling product...");
-    user.sellProduct(1, "abc456", 30);
+    user.sellProduct(3, "abc456", 300);
     System.out.println();
   }
 

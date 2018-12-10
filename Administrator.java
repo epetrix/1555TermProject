@@ -172,11 +172,13 @@ public final class Administrator extends User {
   }
 
   public void getProductStats(boolean isAll, String login) {
-    String query = "SELECT name,status,amount,buyer FROM Product";
-    if(!isAll) query += " WHERE seller = '" + login + "'";
-    query += " ORDER BY "
-      + "CASE WHEN status='sold' "
-      + "THEN 0 ELSE 1 "
+    String query = "SELECT name,status,amount,buyer FROM Product ";
+    if(!isAll) query += "WHERE seller='" + login + "' ";
+    query += "ORDER BY CASE status "
+      + "WHEN 'sold' THEN 0 "
+      + "WHEN 'under auction' THEN 1 "
+      + "WHEN 'closed' THEN 2 "
+      + "ELSE 3 "
       + "END ASC,amount DESC,name ASC";
 
     System.out.println("Result:");
@@ -188,15 +190,15 @@ public final class Administrator extends User {
         return;
       }
 
-      String format = "| %-20s | %-8s | %-8d | %-10s |";
+      String format = "| %-20s | %-13s | %-8d | %-10s |";
       String titleFormat = format.replace('d', 's');
-      System.out.println("+----------------------+----------+----------+------------+");
+      System.out.println("+----------------------+---------------+----------+------------+");
       System.out.println(String.format(titleFormat, "Name", "Status", "High Bid", "Bidder"));
-      System.out.println("+----------------------+----------+----------+------------+");
+      System.out.println("+----------------------+---------------+----------+------------+");
       do {
         printProduct(resultSet, format);
       } while(resultSet.next());
-      System.out.println("+----------------------+----------+----------+------------+");
+      System.out.println("+----------------------+---------------+----------+------------+");
     } catch(SQLException ex) {
       System.out.println("Getting product statistics failed!");
     }
@@ -246,25 +248,24 @@ public final class Administrator extends User {
   }
 
   public void getBestLeafCategories(int months, int total) {
-    String whereClause = "WHERE NOT EXISTS ("
-      + "SELECT 1 FROM Category C2 "
-      + "WHERE C1.name = C2.parent_category"
-      + ")";
+    String query = "SELECT name as cat,func_productCount(name,?) as total "
+      + "FROM Category "
+      + "WHERE parent_category IS NOT NULL";
     System.out.println("Getting top " + total + " highest volume leaf categories...");
-    getBestCategories(whereClause, months, total);
+    getBestCategories(query, months, total);
   }
 
   public void getBestRootCategories(int months, int total) {
-    String whereClause = "WHERE parent_category IS NULL";
+    String query = "SELECT C2.name as cat,sum(func_productcount(C1.name,?)) as total "
+      + "FROM Category C1 INNER JOIN Category C2 "
+      + "ON C1.parent_category=C2.name "
+      + "GROUP BY C2.name";
     System.out.println("Getting top " + total + " highest volume root categories...");
-    getBestCategories(whereClause, months, total);
+    getBestCategories(query, months, total);
   }
 
-  private void getBestCategories(String whereClause, int months, int total) {
-    String query = "SELECT name,func_productCount(name,?) as count "
-      + "FROM Category C1 "
-      + whereClause + " "
-      + "ORDER BY count DESC,name ASC "
+  private void getBestCategories(String query, int months, int total) {
+    query += " ORDER BY total DESC,cat ASC "
       + "FETCH FIRST ? ROWS ONLY";
 
     System.out.println("Result:");
