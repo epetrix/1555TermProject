@@ -6,13 +6,13 @@ public class AdministratorTest {
     testOtherStats(admin);
   }
 
-  private void log(String message) {
+  private void log(Administrator admin, String message) {
     System.out.print("Admin \"" + admin.login + "\": ");
     System.out.println(message);
   }
 
   private static void testNewUser(Administrator admin) {
-    log("Testing register customer...");
+    log(admin, "Testing register customer...");
     String login = "user1";
     String password = "password1";
     String name = "Mr. User";
@@ -27,7 +27,7 @@ public class AdministratorTest {
   }
 
   private static void testSysDate(Administrator admin, String date) {
-    log("Testing update system date...");
+    log(admin, "Testing update system date...");
     admin.setDate(date, "yyyy-MM-dd HH:mm:ss");
   }
 
@@ -36,7 +36,7 @@ public class AdministratorTest {
   }
 
   private static void testProductStats(Administrator admin, boolean isAll, String login) {
-    log("Testing product statistics...");
+    log(admin, "Testing product statistics...");
     admin.getProductStats(isAll, login);
   }
 
@@ -48,22 +48,22 @@ public class AdministratorTest {
   }
 
   private static void testHighLeaves(Administrator admin) {
-    log("Testing high volume leaf categories...");
+    log(admin, "Testing high volume leaf categories...");
     admin.getBestLeafCategories(5, 10);
   }
 
   private static void testHighRoots(Administrator admin) {
-    log("Testing high volume root categories...");
+    log(admin, "Testing high volume root categories...");
     admin.getBestRootCategories(5, 10);
   }
 
   private static void testActiveBidders(Administrator admin) {
-    log("Testing most active bidders...");
+    log(admin, "Testing most active bidders...");
     admin.getActiveBidders(5, 10);
   }
 
   private static void testActiveBuyers(Administrator admin) {
-    log("Testing most active buyers...");
+    log(admin, "Testing most active buyers...");
     admin.getActiveBuyers(5, 10);
   }
 }
