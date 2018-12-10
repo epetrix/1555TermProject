@@ -18,18 +18,22 @@ public class MyAuction
 	public static void main(String[] args)
 	{
 		scanner = new Scanner(System.in);
-		serverLogin();
+		connection = serverLogin();
 		boolean done;
 		do {
-			auctionLogin();
+			User user = auctionLogin(connection);
+			user.openMenu();
+			System.out.println("Logging out...");
 			System.out.print("Log in again? (Y/n): ");
 			done = !Prompter.getBoolean();
 		} while(!done);
 		System.out.println("Goodbye!");
 	}
 
-	private static void serverLogin() {
+	public static Connection serverLogin() {
 		System.out.println("Please enter your user credentials for sqlplus.");
+
+		Connection connection;
 		boolean success = false;
 		do {
 			System.out.print("username: ");
@@ -47,17 +51,18 @@ public class MyAuction
 				System.out.print("Wrong username or password. Try again!");
 			}
 		} while(!success);
+
 		System.out.println();
+		return connection;
 	}
 
-	public static void auctionLogin() {
+	public static User auctionLogin(Connection connection) {
 		System.out.print("Hello welcome to our Electronic Auctioning System! ");
 		System.out.println("Please log in.");
 
 		Map<String,String> adminMap = getAdminMap();
 		Map<String,String> customerMap = getCustomerMap();
-		User user = null;
-		while(user == null) {
+		while(true) {
 			System.out.print("username: ");
 			String username = scanner.nextLine();
 
@@ -67,16 +72,13 @@ public class MyAuction
 			//checking if user is admin or customer
 			//getting login information, checking validity
 			if(password.equals(adminMap.get(username))) {
-				user = new Administrator(connection, username);
-			} else if(password.equals(customerMap.get(username))) {
-				user = new Customer(connection, username);
-			} else {
-				System.out.println("Wrong username or password! Try again.");
+				return new Administrator(connection, username);
 			}
+			if(password.equals(customerMap.get(username))) {
+				return new Customer(connection, username);
+			}
+			System.out.println("Wrong username or password! Try again.");
 		}
-
-		user.openMenu();
-		System.out.println("Logging out...");
 	}
 
 	public static Map<String,String> getAdminMap()
